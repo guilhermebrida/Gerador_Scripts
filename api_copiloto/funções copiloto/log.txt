@@ -1,0 +1,43 @@
+
+//***************************
+//*  Envio da configuração	*
+//***************************
+
+//Envia to dia às 01hs ou 02hs horário de verão
+>STR15 040000<
+
+>SED180 TR15++ +- SGN NN {SCC58 5}<
+>SED181 CL58++ +- GF0 AX {QUV00,9,3 QUV10,9,120 QCT14,7,10 QCT15,7,10 QCT17,7,10}<
+>SED182 CL58++ +- GF0 AX {QUV00,9,3 QUV11,9,200 QIT02,4,13 QIT03,4,13 QIT07,4,13}<
+>SED183 CL58++ +- GF0 AX {QUV00,9,3 QUV12,9,180}<
+
+//--------------------------------------------------------------------------
+
+//***********
+//* Logger	*
+//***********
+
+>SED93 TT00++ IN07++||UC15++ SGN NN {SCC15 120}<
+
+//Em caso de falha de RAM, posiona o ponteiro de logger na última posição
+>SED94 RT63++ +- SGN NN {QDLS311229235959}<
+
+//Armazena Versao,Vel, RPM
+>SED95 TT00++ CL15-- LOG AX {PLN03,4,2 QCT64_6D,7,3 QCT27_6D,9,3}<
+
+//Armazena Discreta Virtual 1
+>SED96 TT00++ CL15-- LOG AX {QCT78_8H,7,8}<
+
+//Armazena Discreta Virtual 2
+>SED97 TT00++ CL15-- LOG AX {QCT79_8H,7,8}<
+
+//Armazena GP
+>SED98 TT00++ CL15-- LOG GP<
+
+//Armazena Hodometro
+>SED99 TT00++ CL15-- LOG AX {QCT01,7,10}<
+
+//--------------------------------------------------------------------------
+
+
+

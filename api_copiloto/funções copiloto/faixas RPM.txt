@@ -1,0 +1,23 @@
+
+//********************
+//*   Faixas RPM     *
+//********************
+
+//RPM Marcha Lenta
+>SUT11,QCT27,7,15,400,1100<
+>SED131 TT00++ UC11++ SGN NN {SCT41 +1}<
+
+//RPM Faixa Verde
+>SUT12,QCT27,7,15,1200,4000<
+>SED132 TT00++ UC12++ SGN NN {SCT42 +1}<
+
+//RPM Excesso
+>SUT13,QCT27,7,15,5500,9999<
+
+//RPM Faixa Verde Ext. (Freio Motor)
+>SUT14,QCT27,7,15,9999,9999<
+
+//RPM Ex. RPM Evento (Freio Motor)
+>SUT15,QCT27,7,15,9999,9999<
+
+//----------------------------------------------------------------------------

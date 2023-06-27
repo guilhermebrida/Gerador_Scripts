@@ -1,0 +1,17 @@
+//***************
+//* Modo Sleep	*
+//***************
+
+//90 segundos antes de entrar em modo sleep, envia uma mensagem com as tensões das baterias externa e interna
+>SED15 LP01++ +- GF0 V0<
+
+//Ao acordar do modo sleep, envia uma mensagem com as tensões das baterias externa e interna
+//Reconfigura o modo sleep para ficar somente 120s acordado
+>SED01 LP03++ +- GF0 V0<
+
+//Configuras Modo sleep
+//Dorme, desligando todos os periféricos, 10 min após desligar ignição.
+//Fica dormindo por 1800 segundos ou até ligar a ignição.
+>VSKO0600060000900120_INS1_CAN1_EVP1800<
+
+//--------------------------------------------------------------------------

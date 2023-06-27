@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Checkboxes</title>
+    <link rel="stylesheet" href="/static/styles.css"> 
+</head>
+<body>
+    <h1>Funcionalidades Desejadas:</h1>
+    <form action="/submit" method="POST">
+        {% for checkbox in checkboxes %}
+        <label>
+            <input type="checkbox" name="checkbox" value="{{ checkbox[0] }}">
+            {{ checkbox[1] }}
+        </label>
+        <br>
+        {% endfor %}
+        <br>
+        <h1>Valores parâmetros:</h1>
+        {% for var in checkboxes_var %}
+        <label>
+            {% if var[0] == 1 %}
+            <input type="text" name="input_{{ var[0] }}" placeholder="Insira um valor">
+            {{ var[1] }}
+            {% elif var[0] == 2 %}
+            <input type="text" maxlength="15" name="input_{{ var[0] }}" placeholder="Insira um valor">
+            {{ var[1] }}
+            {% else %}
+            <input type="number" maxlength="4" name="input_{{ var[0] }}" placeholder="Insira um valor">
+            {{ var[1] }}
+            {% endif %}
+        </label>
+        <br>
+        {% endfor %}
+        <br>
+        <h1> Alarmes Ativos </h1>
+        {% for alarme in alarmes %}
+        <label>
+            <input type="checkbox" name="alarme" value="{{ alarme[0] }}">
+            {{ alarme[1] }}
+        </label>
+        <br>
+        {% endfor %}
+        <br>
+        <input type="submit" value="Gerar Script">
+    </form>
+</body>
+</html>
+
+
+
+<!-- {% for checkbox in checkboxes %}
+{% if checkbox[1] == "Excesso de Velocidade" %}
+<label>
+    <input type="checkbox" name="checkbox" value="{{ checkbox[0] }}">
+    {{ checkbox[1] }} &emsp;&emsp;&emsp;&emsp;&emsp;
+    <input type="text" name="input_{{ checkbox[0] }}" placeholder="Tolerância (s)">
+    <input type="text" name="input_{{ checkbox[0] }}" placeholder="Limite pista seca (km/h)">
+    <input type="text" name="input_{{ checkbox[0] }}" placeholder="Limite com chuva (km/h)">
+    <input type="text" name="input_{{ checkbox[0] }}" placeholder="Limite carregado (km/h)">
+</label>
+{% elif checkbox[1] == "Parada motor ligado" %}
+<label>
+    <input type="checkbox" name="checkbox" value="{{ checkbox[0] }}">
+    {{ checkbox[1] }} &emsp;&emsp;&emsp;&emsp;&emsp;
+    <input type="text" name="input_{{ checkbox[0] }}" placeholder="Tempo de Parada">
+</label>
+{% elif checkbox[1] == "Condução ininterrupta" %}
+<label>
+    <input type="checkbox" name="checkbox" value="{{ checkbox[0] }}">
+    {{ checkbox[1] }} &emsp;&emsp;&emsp;&emsp;&emsp;
+    <input type="text" name="input_{{ checkbox[0] }}" placeholder="Tempo máximo de condução (minutos)">
+    <input type="text" name="input_{{ checkbox[0] }}" placeholder="Tempo de descanso obrigatório (minutos)">
+    <input type="text" name="input_{{ checkbox[0] }}" placeholder="Tolerância para descanso obrigatório (minutos)">
+</label>
+{% elif checkbox[1] == "Aceleração brusca" %}
+<label>
+    <input type="checkbox" name="checkbox" value="{{ checkbox[0] }}">
+    {{ checkbox[1] }} &emsp;&emsp;&emsp;&emsp;&emsp;
+    <input type="text" name="input_{{ checkbox[0] }}" placeholder="Limite de Aceleração Brusca">
+</label>
+
+{% elif checkbox[1] == "Desaceleração brusca" %}
+<label>
+    <input type="checkbox" name="checkbox" value="{{ checkbox[0] }}">
+    {{ checkbox[1] }} &emsp;&emsp;&emsp;&emsp;&emsp;
+    <input type="text" name="input_{{ checkbox[0] }}" placeholder="Limite de desaceleração Brusca">
+</label>
+
+{% elif checkbox[1] == "Faixas RPM" %}
+    <label>
+        <input type="checkbox" name="checkbox" value="{{ checkbox[0] }}">
+        {{ checkbox[1] }} &emsp;&emsp;&emsp;&emsp;&emsp;
+        <input type="text" name="input_{{ checkbox[0] }}" placeholder="Marcha lenta">
+        <input type="text" name="input_{{ checkbox[0] }}" placeholder="Faixa verde min">
+        <input type="text" name="input_{{ checkbox[0] }}" placeholder="Faixa verde max">
+        <input type="text" name="input_{{ checkbox[0] }}" placeholder="Excesso">
+    </label>
+{% else %}
+    <label>
+        <input type="checkbox" name="checkbox" value="{{ checkbox[0] }}">
+        {{ checkbox[1] }}
+    </label>
+{% endif %}
+<br>
+{% endfor %}
+<br> -->

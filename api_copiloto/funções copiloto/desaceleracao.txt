@@ -1,0 +1,17 @@
+
+//**********************************
+//*		Desaceleração			   *
+//**********************************
+
+//Limite de Freada Brusca (Para salvar um valor negativo)
+>SCT08 0-15<
+
+//Captura do limite e trigger de Freada Brusca
+>SUT18,QCT08,7,10,-150,-4<
+>SUT20,QCT76,7,10,-150,UT18<
+
+//Infração de Desaceleração
+//Dados: Limite, Desaceleração registrada
+>SED207 UC20++ UC18++&&IN07++ GF0 V2 {STB020 GVD0-VCT08,19,3 GVD0-RUT20,19,3}{SCT88 VCT16&4096}<
+
+//--------------------------------------------------------------------------

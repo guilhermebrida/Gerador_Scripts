@@ -1,0 +1,45 @@
+//***************************************
+//*  Tempo Entradas Digitais Acionadas  *
+//***************************************
+
+//_INV0 -> Indica que a entrada está LIGADA quando conectada ao V_BAT ou flutuando
+//_INV1 -> Indica que a entrada está LIGADA quando conectada ao GND
+
+//Entrada Digital 1 (Discreta 2)
+>SIT01003003_INV1<
+>SED135 TT00++ IN01++ SGN NN {SCT43 +1}<
+
+//Entrada Digital 2 (Discreta 3)
+>SIT02003003_INV1<
+>SED136 TT00++ IN02++ SGN NN {SCT44 +1}<
+
+//Limpa Variaveis
+>SCT4344 0<
+
+//--------------------------------------------------------------------------
+
+//************************
+//*	 Discretas Virtuais  *
+//************************
+
+//Prepara os dados para Discreta Virtual 1 a 4
+//CT78 D1D2D3D4
+//D1 (CT80) = SCT78 |VCT80&HFF*16777216 (Limpador)
+//D2 (CT81) = SCT78 |VCT81&HFF*65536    (Freio)
+//D3 (CT82) = SCT78 |VCT82&HFF*256		(Farol)
+//D4 (CT83) = SCT78 |VCT83&HFF			(Cinto)
+//Caso não tenha a discreta substituir por SCT78 |FF*x, onde x é correspondente a discreta
+>SED10 TT00++ +- SGN NN {SCT78 HFFFFFFFF}<
+>SED11U<
+
+//Prepara os dados para Discreta Virtual 5 a 8
+//CT79 D5D6D7D8
+//D1 (CT84) = SCT79 |VCT84&HFF*16777216
+//D2 (CT85) = SCT79 |VCT85&HFF*65536
+//D3 (CT86) = SCT79 |VCT86&HFF*256
+//D4 (CT87) = SCT79 |VCT87&HFF
+//Caso não tenha a discreta substituir por SCT79 |FF*x, onde x é correspondente a discreta
+>SED12 TT00++ +- SGN NN {SCT79 HFFFFFFFF}<
+>SED13U<
+
+//--------------------------------------------------------------------------

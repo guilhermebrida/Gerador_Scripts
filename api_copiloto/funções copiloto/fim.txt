@@ -1,0 +1,14 @@
+//*******************
+//*  Versionamento  *
+//*******************
+
+>STP01 -<
+
+//--------------------------------------------------------------------------
+
+//Precisa enviar os alarmes ativos no fim para garantir que não serão
+//alterados.
+>SCT16 768<
+
+//Salva parametros
+>SSO<
