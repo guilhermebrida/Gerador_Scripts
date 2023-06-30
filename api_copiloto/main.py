@@ -3,9 +3,12 @@ from jinja2 import Template
 from pprint import pprint
 import re
 from datetime import date
+from validate import *
 
 app = Flask(__name__)
 app.static_folder = './static/css'
+
+checkbox_hardwares = ['S8','S4','S4+','S3','S3+','S1']
 
 checkbox_names = {
     "Tracking": "./api_copiloto/funções copiloto/tracking.txt",
@@ -27,7 +30,7 @@ checkbox_names = {
 
 checkbox_names_var = [
     "Nome do Arquivo",
-    # "Id Arquivo configurador",
+    "Id Arquivo configurador",
     "Limite de Velocidade (Km/h)",
     "Limite de Velocidade com Chuva (Km/h)",
     "Limite de Velocidade Carregado (Km/h)",
@@ -70,7 +73,7 @@ checkboxes_alarmes = {
 }
 
 
-def Gerar_arquivo(funcoes,parametros,ALARMES):
+def Gerar_arquivo(hw,funcoes,parametros,ALARMES):
     with open('./api_copiloto/funções copiloto/inicio.txt', 'r') as t:
         tudo = t.read()
     for funcao in funcoes:
@@ -163,7 +166,7 @@ def Gerar_arquivo(funcoes,parametros,ALARMES):
         tudo = re.sub(">SXT0010010101_MD1<","",tudo)
         tudo = re.sub(">SSO<",">SXT0010010101_MD1<\n>SSO<",tudo)
     tudo = Gerar_alarmes(tudo,ALARMES)
-    with open(f'./{path}.txt', 'w') as fim:
+    with open(f'./{path}_{hw}.txt', 'w') as fim:
         fim.write(tudo)
 
 def Gerar_alarmes(tudo,alarmes):
@@ -174,43 +177,57 @@ def Gerar_alarmes(tudo,alarmes):
         tudo = re.sub(">SCT16 768<",f">SCT16 {sct16}<",tudo)
     return tudo
 
+def Hardwares(hw):
+    if hw == 'S8':
+        return 'VL8'
+    if hw == 'S4':
+        return 'VC5'
+    if hw == 'S4+':
+        return 'VC7'
+    if hw == 'S3':
+        return 'VL10'
+    if hw == 'S3+':
+        return 'VL12'
+    if hw == 'S1':
+        return 'VL6'
 
 
 
-def validate_checkboxes(selected_checkboxes):
-    if "7" in selected_checkboxes and "15" in selected_checkboxes:
-        return True
-    return False
 
-def validate_path(values):
-    print(values)
-    if "Nome do Arquivo" not in values:
-        return True
-    return False
 
 @app.route('/')
 def index():
     checkboxes = zip(range(1, len(checkbox_names) + 1), checkbox_names)
     checkboxes_var = zip(range(1, len(checkbox_names_var) + 1), checkbox_names_var)
     checkbox_alarmes = zip(range(1, len(checkboxes_alarmes) + 1), checkboxes_alarmes)
-    return render_template('index.html', checkboxes=checkboxes, checkboxes_var=checkboxes_var, alarmes=checkbox_alarmes)
+    checkboxes_hw = zip(range(1, len(checkbox_hardwares) + 1), checkbox_hardwares)
+    return render_template('index.html', checkboxes=checkboxes, checkboxes_var=checkboxes_var, alarmes=checkbox_alarmes, hardwares=checkboxes_hw)
 
 
 @app.route('/submit', methods=['POST'])
 def submit():
+    funcoes = []
+    values = {}
+    ALARMES = []
     selected_checkboxes = request.form.getlist('checkbox')
+    selected_hardwares = request.form.getlist('hw')
     alarme_escolhido = request.form.getlist('alarme')
+    hardwares_condition = validate_hardwares(selected_hardwares)
     condition = validate_checkboxes(selected_checkboxes)
+    none_hw = hardwares_is_None(selected_hardwares)
+    if none_hw:
+        return render_template('popup.html', none_hw=none_hw)
+    hw_escolhido = str(checkbox_hardwares[int(selected_hardwares[0])-1])
+    if hardwares_condition:
+        return render_template('popup.html', hardwares_condition=hardwares_condition)
     if condition:
         popup_visible = True
         # return render_template('index.html', popup_visible=popup_visible)
         return render_template('popup.html', condition=condition)
-    funcoes = []
     for checkbox in selected_checkboxes:
         chaves = list(checkbox_names.keys())
         parameter_name = chaves[int(checkbox)-1]
         funcoes.append(parameter_name)
-    values = {}
     for var in checkbox_names_var:
         input_name = 'input_' + str(checkbox_names_var.index(var)+1)
         value = request.form.get(input_name)
@@ -219,16 +236,32 @@ def submit():
     validate = validate_path(values)
     if validate:
         return render_template('popup.html', validate=validate)
-    ALARMES = []
     for alarm in alarme_escolhido:
         chaves = list(checkboxes_alarmes.keys())
         parameter_name = chaves[int(alarm)-1]
         ALARMES.append(parameter_name)
-    Gerar_arquivo(funcoes,values,ALARMES)
-    return 'Funções desejadas:' + str(funcoes) + '<br>' + 'Valores capturados: ' + str(values) + '<br>' + 'alarmes: ' + str(ALARMES) 
+    hw = Hardwares(hw_escolhido)
+    Gerar_arquivo(hw,funcoes,values,ALARMES)
+    return 'Hardware: ' + hw_escolhido + '<br>' + 'Funções desejadas:' + str(funcoes) + '<br>' + 'Valores capturados: ' + str(values) + '<br>' + 'alarmes: ' + str(ALARMES) 
+
+
 
 if __name__ == '__main__':
   app.run(debug=True)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

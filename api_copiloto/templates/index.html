@@ -5,8 +5,16 @@
     <link rel="stylesheet" href="/static/styles.css"> 
 </head>
 <body>
-    <h1>Funcionalidades Desejadas:</h1>
     <form action="/submit" method="POST">
+        <h1>Hardware</h1>
+        {% for hw in hardwares %}
+        <label>
+            <input type="checkbox" name="hw" value="{{ hw[0] }}">
+            {{ hw[1] }}
+        </label>
+        {% endfor %}
+        <h1>Funcionalidades Desejadas:</h1>
+    
         {% for checkbox in checkboxes %}
         <label>
             <input type="checkbox" name="checkbox" value="{{ checkbox[0] }}">

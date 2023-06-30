@@ -4,7 +4,7 @@
 //**********************************
 
 //Padrão Desabilitado
->SSH120<
+>SSH121<
 
 //Limpador ligado na IN02 (Discreta 3)
 >SUT02,QIN,25,1,1,1<
