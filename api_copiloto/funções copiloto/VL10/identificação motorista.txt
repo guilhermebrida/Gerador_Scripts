@@ -1,0 +1,37 @@
+
+//**********************************
+//*  Identificação de Motorista    *
+//**********************************
+
+//Desablitita protocolo Ibutton
+>SIO<
+
+//Ativa identificação de Condutor
+>SSH111<
+
+//Captura ID do mifare
+>SRU00 RID,4,1,60<
+>SRU01 RFID,4,5,12<
+
+//Configura Prefixo RF
+>STB000 PLNRF,4,2<
+
+//Motorista identificado
+>SED19 RU00++ SG06--&&SG11++ SGN NN {SCT88 VCT16&512}{STB000 PLNRF,4,2}{STB002 QRU00,40,12}{SSH061}<
+>SED18 RU01++ SG06--&&SG11++ SGN NN {SCT88 VCT16&512}{STB000 PLNRF,4,2}{STB002 QRU01,37,10}{SSH061}<
+>SED20 SG06++ SG11++ GF0 V0 {SCC01 30}{STBF}<
+
+//Garante que terá 000000000000  no buffer
+>SED100 IN07+- SG11-- SGN NN {STB000 PLN000000000000,4,12}<
+
+//Dispara alarme quando a ignição é ligada
+>SED101 TT00++ IN07++&&SG06--&&SG11++ SGN NN {SCT88 VCT16&268435456}<
+
+//Limpa o Cartão após Ign desligada
+>SED102 TT00++ IN07--&&CL01++ SGN NN {STB000 PLN000000000000,4,12}{SSH060}<
+
+//Ativa o leitor quando ign on OU quando Dispara o Timer 04 
+>STD040003<
+>SED105 IN07++^^TD04++ IN07++&&SG11++&&SG06-- TRM AC {>MSRM_ENA,00,60<
+
+//---------------------------------------------------------------------------------------

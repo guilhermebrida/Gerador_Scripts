@@ -1,0 +1,79 @@
+
+//*************************************
+//*  UT's Cercas Embarcadas Região 1  *
+//*************************************
+
+//Captura o Limite de Velocidade da cerca 
+>SUT31,GBALLL01,17,3,0,0<
+
+//Captura o Limite de Velocidade com Evento
+>SUT32,GBALLL01,20,3,0,0<
+
+//Captura o ID da cerca 
+>SUT33,GBALLL01,23,6,0,0<
+
+//Captura o Id da cerca anterior para comparar com o Id da cerca atual.
+>SUT34,QCT77,07,05,0,0< 
+
+//Verifica se a cerca atual é diferente da anterior. Se for diferente retorna 0.
+>SUT35,QCT77,07,05,UT33,UT33<
+
+//**********************************
+//*  Cercas Embarcadas Região 1    *
+//**********************************
+
+//Envia um tracking de entrada na cerca
+>SED81 RR01++ +- GF0 V2 {STB020 PLN0,4,1 QUT33,28,6}{SCT77 RUT33}{SCC40 3}<
+
+//Envia um tracking de saída da cerca
+>SED82 RR01-- +- GF0 V2 {STB020 QCT77,7,6 PLN0,4,1}{SCC40 3}<
+
+//Trocou de cerca. Armazena ID da cerca atual
+>SED83 TT00++ RR01++&&UC35-- GF0 V2 {STB020 QCT77,7,6 QUT33,28,6}{SCT77 RUT33}{SCC40 3}<
+
+//Perdeu ou recuperou posição: força troca de limite
+>SED84 GM14+- +- SGN NN {SSH201}<
+
+//Tolerancia para retornar os limites de velocidade padrões
+>SED85 CL40++ +- SGN NN {SSH201}<
+
+//----------------------------------------------------------------------------
+
+//**********************************
+//*  Troca Limite de Velocidade    *
+//**********************************
+
+//Limpa Disparador Flag 20 (SH20)
+>SSH200<
+
+//** Limite de velocidade fora de cerca  **
+//Caso foi solicitado uma troca de limite de velocidade (SG20++),
+//Verifica se está fora de uma cerca (RR01--)
+//Sempre irá adotar este limite quando estiver fora da cerca
+>SED185 SG20++ +- SGN NN {SCT10 VCT11}{SSH211}<
+
+//** Limite de velocidade dentro de cerca  **
+//Caso foi solicitado uma troca de limite de velocidade (SG20++),
+//Verifica se está dentro de uma cerca (RR01++)
+//Sempre irá adotar este limite quando estiver dentro da cerca
+>SED186 SG20++ RR01++&&GM14++ SGN NN {SCT10 RUT31*1000+999}{SSH211}<
+
+//** Limite de velocidade em chuva fora de cerca  **
+//Caso foi solicitado uma troca de limite de velocidade (SG20++),
+//Verifica se está fora de uma cerca (RR01--), e se está chovendo (SG12++&&SG22)
+//Sempre irá adotar este limite quando estiver fora da cerca com chuva
+>SED187 SG20++ SG12++&&SG22++&&RR01-- SGN NN {SCT10 VCT12}{SSH211}<
+
+//** Limite de velocidade em chuva dentro de cerca  **
+//Caso foi solicitado uma troca de limite de velocidade (SG20++),
+//Verifica se está dentro de uma cerca (RR01++), e se está chovendo (SG12++&&SG22)
+//Sempre irá adotar este limite quando estiver dentro da cerca com chuva
+>SED188 SG20++ SG12++&&SG22++&&RR01++&&GM14++ SGN NN {SCT10 RUT32*1000+999}{SSH211}<
+>SED189U<
+
+
+//Limpa Flag SH20
+>SED190 TT00++ SG20++ SGN NN {SSH200}{SCT88 |VCT16&8}<
+
+
+//-----------------------------------------------------------------------

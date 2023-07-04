@@ -27,13 +27,16 @@
         {% for var in checkboxes_var %}
         <label>
             {% if var[0] == 1 %}
-            <input type="text" name="input_{{ var[0] }}" placeholder="Insira um valor">
+            <input type="text" maxlength="15" name="input_{{ var[0] }}" placeholder="Insira um valor">
             {{ var[1] }}
             {% elif var[0] == 2 %}
             <input type="text" maxlength="15" name="input_{{ var[0] }}" placeholder="Insira um valor">
             {{ var[1] }}
+            {% elif var[0] == 20 %}
+            <input type="text" maxlength="10" name="input_{{ var[0] }}" placeholder="Ex BRACELL">
+            {{ var[1] }}
             {% else %}
-            <input type="number" maxlength="4" name="input_{{ var[0] }}" placeholder="Insira um valor">
+            <input type="tel" maxlength="5" name="input_{{ var[0] }}" placeholder="Insira um valor">
             {{ var[1] }}
             {% endif %}
         </label>

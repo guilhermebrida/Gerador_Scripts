@@ -1,0 +1,60 @@
+
+//***************************************
+//*  Tempo Entradas Digitais Acionadas  *
+//***************************************
+
+//_INV0 -> Indica que a entrada está LIGADA quando conectada ao V_BAT ou flutuando
+//_INV1 -> Indica que a entrada está LIGADA quando conectada ao GND
+
+//Entrada Digital 0 (Discreta 1)
+>SIT00003003_INV1<
+>SED120 TT00++ IN00++ SGN NN {SCT29 +1}<
+
+//Entrada Digital 1 (Discreta 2)
+>SIT01003003_INV1<
+>SED121 TT00++ IN01++ SGN NN {SCT30 +1}<
+
+//Entrada Digital 2 (Discreta 3)
+>SIT02003003_INV1<
+>SED122 TT00++ IN02++ SGN NN {SCT31 +1}<
+
+//Entrada Digital 3 (Discreta 4)
+>SIT03003003_INV1<
+>SED123 TT00++ IN03++ SGN NN {SCT32 +1}<
+
+//Entrada Digital 4 (Discreta 6)
+>SIT04003003_INV1<
+>SED124 TT00++ IN04++ SGN NN {SCT33 +1}<
+
+//--------------------------------------------------------------------------
+
+
+//**************************
+//*  Discretas Virtuais	   *
+//**************************
+
+//Prepara os dados para Discreta Virtual 1 a 4
+//CT78 D1D2D3D4
+//D1 (CT80) = SCT78 |VCT80&HFF*16777216 (Limpador)
+//D2 (CT81) = SCT78 |VCT81&HFF*65536    (Freio)
+//D3 (CT82) = SCT78 |VCT82&HFF*256		(Farol)
+//D4 (CT83) = SCT78 |VCT83&HFF			(Cinto)
+//Caso não tenha a discreta substituir por SCT78 |FF*x, onde x é correspondente a discreta
+//>SED02 TT00++ +- SGN NN {SCT78 0}{SCT79 |VCT87&HFF}{SCT78 |VCT86&HFF*256}<
+//>SED03 TT00++ +- SGN NN {SCT78 |VCT85&HFF*65536}{SCT78 |VCT84&HFF*16777216}<
+>SED02 TT00++ +- SGN NN {SCT78 HFFFFFFFF}<
+>SED03U<
+
+//Prepara os dados para Discreta Virtual 5 a 8
+//CT79 D5D6D7D8
+//D1 (CT84) = SCT79 |VCT84&HFF*16777216
+//D2 (CT85) = SCT79 |VCT85&HFF*65536
+//D3 (CT86) = SCT79 |VCT86&HFF*256
+//D4 (CT87) = SCT79 |VCT87&HFF
+//Caso não tenha a discreta substituir por SCT789 |FF*x, onde x é correspondente a discreta
+//>SED04 TT00++ +- SGN NN {SCT79 0}{SCT79 |VCT87&HFF}{SCT79 |VCT86&HFF*256}<
+//>SED05 TT00++ +- SGN NN {SCT79 |VCT85&HFF*65536}{SCT79 |VCT84&HFF*16777216}<
+>SED04 TT00++ +- SGN NN {SCT79 HFFFFFFFF}<
+>SED05U<
+
+//--------------------------------------------------------------------------

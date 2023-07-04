@@ -1,0 +1,64 @@
+
+//*********************
+//*  Rádio Lora Mesh  *
+//*********************
+
+//Liga o rádio Lora
+>VSLP_RF1<
+
+//Parâmetros de configuração do rádio Lora
+>VSRF500,09,A5,-120,-110,-139,32,50800<
+
+>VSMG0000,24,1F,000102030405060708090A0B0C0D0E0F,500,9,A5,-120,-110,-139<
+//0000 = Password geral padrão;
+//24 = Preâmbulo da rede (pacote inicial);
+//1F = Canais de frequência para alterar (em hexadecimal Máximo de 48 canais) [valores válidos de 00 a 2F].
+//000102030405060708090A0B0C0D0E0F = rede lora
+//500 = BW (Bandwidth) [125, 250, 500];
+//9 = Spread Factor (8..12)
+//A5 = Modo de habilitação para que o equipamento também funcione como um gateway, transmitindo mensagens de outros equipamentos que estão dentro da rede Lora Mesh mas off-line (no GSM). Com as seguintes opções de habilitação:
+// A5 = Habilite para fazer roteador para todos os Sockets
+// 00 = Desativar a função do roteador;
+// 01 = Habilite para tornar o roteador em S0 (Socket 0);
+// 02 = Habilite para tornar o roteador em S1(Socket 1);
+// 04 = Habilite para tornar o roteador em S2 (Socket 2);
+//-120 = Nível mínimo aceitável de RSSI;
+//-110 = Nível ótimo de RSSI;
+//-139 = Constante para cálculo RSSI.
+
+>VSRF_BC2323,000,3333<
+//Broadcast rotativo que o equipamento fica enviando para os demais devices
+//abcd = combinação para 4 mensagens de Broadcast que podem assumir os formatos:
+//2 = conectividade S0 (Socket 0) e S1 (Socket 1);
+//3 = Posição (que pode ser lida na tabela GRLG);
+//7 = Permissões de trabalho e posição (que pode ser lida na tabela GRLG);
+//000 = Velocidade a partir da qual a frequência de transmissão de permissões de trabalho aumenta. (será utilizado 000 para usar os envios apenas como em movimento)
+
+//--------------------------------------------------------------------------
+
+//*****************
+//* WATCHDOG LORA *
+//*****************
+
+//Dispara quando recebe msg via lora e alimenta contador
+>SED126 RF32++ +- SGN NN {SCC52 30}<
+
+//Sem receber Broadcast via lora por 30 segundos - reconfigura rede
+>SED127 CC52++ +- SGN NN {SCC52 30}{GRL_CLR}<
+
+//--------------------------------------------------------------------------
+
+//*********************
+//*  Placa do Veículo *
+//*********************
+
+//Configura placa do veículo e estado (254)
+//Define região 13 para armazenar o dado de placa
+>TCFG0,1310<
+>VSRM13,0,600000,600020<
+
+//Definição do estado e placa:
+//>VSRT600012,"254""4242333231444446"< // define estado 254 y placa BB321DDF 
+//4242333231444446 = Placa do veículo (em formato ASCII hexadecimal convertido em decimal), 4242333231444446 = BB321DDF.
+
+//--------------------------------------------------------------------------

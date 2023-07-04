@@ -1,0 +1,55 @@
+
+//*********************
+//*  Tracking IGN ON  *
+//*********************
+
+//Tracking Ign ON - Configuracao Timer 02 para envio a cada
+//30segundos e 1KM, o que ocorrer depois, ou no máximo a cada 5 minutos
+>STD0200300000001K005M<
+
+//Tracking Ign ON - Evento de envio da mensagem 0 com ignição ligada.
+>SED00 TD02++ IN07++ GF0 V0 {CTD02}{CTD03}<
+
+//--------------------------------------------------------------------------
+
+//*********************
+//*  Tracking IGN OFF *
+//*********************
+
+//Tracking Ign ON - Configuracao Timer - Configuracao Timer 03 para envio a cada 30 minutos
+>STD031800<
+
+//Tracking Ign ON - Evento de envio da mensagem 0 com ignição desligada.
+>SED01 TD03++ IN07-- GF0 V0 {CTD02}{CTD03}<
+
+//--------------------------------------------------------------------------
+
+//*****************************
+//*  Tracking Power On/Off    *
+///****************************
+
+//Tracking Reset Power Off - Ocorre quando a alimentação principal é desligada
+>SED06 IN06-- +- GF0 V0 {SCC58 20}<
+
+//Tracking Reset Power On - Ocorre quando a alimentação principal é ligada
+>SED07 IN06++ +- GF0 V0 {SCC58 20}<
+
+//--------------------------------------------------------------------------
+
+//*********************
+//*  Tracking Angulo  *
+//*********************
+
+//Tracking Angulo - Configuracao Angulo (Trecho Urbano- Variação de Angulo de 45º e Vel > 5 Km/h)
+>STD050005000300450005<
+
+//Tracking Angulo - Configuracao Angulo (Trecho Rodoviário - Variação de Angulo de 20º e Vel > 60 Km/h)
+>STD060010000300200060<
+
+//Tracking Angulo - Configuracao Angulo (Trecho Rodoviário - Variação de Angulo de 10º e Vel > 100 Km/h)
+>STD070010000300100100<
+
+//Tracking Angulo - Evento
+>SED03 TD05++||TD06++||TD07++ IN07++ GF0 V0 {CTD05}{CTD06}{CTD07}{CTD02}<
+
+//--------------------------------------------------------------------------

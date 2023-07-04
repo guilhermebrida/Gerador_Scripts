@@ -1,0 +1,35 @@
+
+//*******************************
+//*    Parada com Motor Ligado  *
+//*******************************
+
+//Tempo da Parada com Motor Ligado
+>SCT04 600<
+
+//Trigger para indicar que o veículo está parado
+>SUT03,QCT64,7,15,0,2999<
+
+//Envia a mensagem de início de parada com motor ligado (Somente após estourar o tempo)
+>SED36 SG04++ +- GF0 V7 {SCT54 VCT04}<
+
+//Fim da Infração
+>SED37 TT00++ UC15--||UC03--&&SG04++ GF0 V8 {SCT50 VCT70+VCT04}{SCT5153 0}{SSH040}<
+
+//Alarme/rearme do tempo e contagem do tempo
+>SED146 TT00++ SG04++ SGN NN {SCT70 +1}<
+>SED147 CC08-- UC15++&&UC03++ SGN NN {SCT88 VCT16&1}{SCC08 VCT04}{SSH041}<
+
+//Inicio da Infração (Está com motor ligado)
+>SED148 TT00++ UC15++&&UC03++&&CL08++ SGN NN {SCC08 VCT04}{SSH040}<
+
+//Proteção caso não ocorra a infração
+>SED153 TT00++ UC15--||UC03--&&SG04-- SGN NN {SCC08 0}{SCT70 0}<
+
+//Limpa variaveis utilizadas
+>SCT70 0<
+>SCT5054 0<
+
+//Limpa as Flags
+>SSH040<
+
+//-----------------------------------------------------------------------------

@@ -1,0 +1,28 @@
+
+//****************************************
+//*	Função: Infração Excesso RPM (UC13)  *
+//****************************************
+
+//Captura Limite de RPM
+>SUT12,QUT13,C2B,1,5,0,0<
+
+//Início da Infração - Prepara e envia mensagem UC07
+>SED32 CL07++ UC13++&&SG05-- GF0 V7 {SCT54 RUT12}{SSH051}{SCT6569 0}<
+
+//Fim da Infração - Prepara e envia mensagem UC08
+>SED33 TT00++ UC13--&&SG05++ GF0 V8 {SCT50 VCT65}{SCT51 VCT67}{SCT52 VCT66}{SCT53 0}{SSH050}<
+
+//Tolerancia para excesso de infração de RPM (Devido ao Freio Motor)
+>SED143 UC13++ CL07++&&SG05-- SGN GP {SCC07 4}<
+//Armazena os dados da Infração de RPM: Incrementa Duração, captura e alarme
+>SED144 TT00++ SG05++ SGN NN {SCT65 +1}{SCT68 VCT27}{SCT69 +VCT68}{SCT88 VCT16&4194304}<
+//Armazena os dados da Infração de RPM: RPM_Max e velocidade Atual
+>SED145 TT00++ SG05++ SGN NN {GGRVCT68VCT66}{SCT66 VCT68}{SCT67 VCT64}<
+
+//Limpa variaveis utilizadas
+>SCT6569 0<
+
+//Limpa Flag utilizada
+>SSH050<
+
+//-----------------------------------------------------------------------------

@@ -4,6 +4,10 @@
 //**********************************
 
 >SXT0010010101_MD0<
+
+//Evento Ignição OFF - Envia mensagens 4 (Ignição Off) e 5 (Faixas de Velocidade e Tempos das Entradas Digitais)
+>SED25 IN07-- SG00++ GF0 V4 {SCC01 30}{SCT64 0}{SCT27 0}{SSH000}{SSO}<
+
 //Desablitita protocolo Ibutton
 >SIO<
 

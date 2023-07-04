@@ -1,0 +1,76 @@
+
+//************************************
+//* Controle de Fadiga de Motorista  *
+//************************************
+
+//Padrão Desabilitado
+>SSH151<
+
+//Valores iniciais
+//TMC = 2,5h    =  9000  seg (CT14)
+//TT  = 30 min  =  1800  seg (CT15)
+//TD  = 10 min  =  600   seg (CT17)
+
+//TMC - Tempo Máximo de Condução
+>SCT14 14400<
+
+//TT - Tempo de tolerancia para parar antes de gerar infração
+>SCT15 3600<
+
+//TD - Tempo de Descanso parada Obrigatoria
+>SCT17 3600<
+
+//Velocidade mínima para considerar veículo parado
+>SUT06,QCT64,7,15,0,40999<
+
+//Fim da Tolerancia - Envia mensagem de Inicio da infração
+//Infração de condução Ininterrupta em ocorrencia Flag 31 em 1
+>SED199 CC45-- UC06--&&SG31-- SGN NN {GGRVCT23VCT14}{SSH311}<
+>SED115 SG31++ UC06-- GF0 V0<
+
+//Fim da Infração - Tempo de condução Ininterrupta excedido
+>SED116 CC47-- SG31++ GF0 V2 {STB020 QCT14,7,10 QCT15,7,10 QCT17,7,10 QCT23,7,10}<
+
+//Limpeza das variáveis
+>SED161 CC47-- SG31++ SGN NN {SCT2325 0}{SCT21 0}{SSH280}{SSH300}{SSH310}{SCC45 0}<
+
+//Armazena os dados da infração: Duração [CT23].
+>SED162 TT00++ UC06--&&SG15++ SGN NN {SCT23 +1}{SCC47 0}<
+
+//Dispara tolerancia TT [CT15] quando cTMC [CT29] atingir o TMC [CT14]) e habilita Alarme [SG30++]
+>SED152 TT00++ UC06--&&SG30--&&SG15++ SGN NN {GGRVCT23VCT14}{SCC45 VCT15}{SSH301}<
+
+//Alarme de condução ininterrupta (Está com movimento)
+//Emitir 3 bips curtos espaçados de 300 seg [CC46] após atingir TMC
+>SED153 TT00++ UC06--&&SG30++&&CL46++ SGN NN {SCT88 VCT16&32}{SCC46 300}<
+
+//Condição inicial de cTMC[CT23] > zero[CT25]
+>SCT25 0<
+
+//Quando cessar o movimento do veiculo, se cumpre a
+//Condição de cTMC[CT23] > zero[CT25] Habilita a Flag 29 em 1
+>SED155 TT00++ UC06--&&SG15++ SGN NN {GGRVCT23VCT25}{SSH281}<
+
+//Quando cessar o movimento do veiculo, inicia-se a contagem cTD [CT24]
+>SED156 TT00++ UC06++&&SG28++ SGN NN {SCT24 +1}<
+
+//Quando cesar o movimento do veiculo, inicia-se a contagem TD [CT17]
+//O valor do CT17 é carregado no CC47
+//O valor do CC45 é armazenado no CT21
+>SED154 UC06++ SG15++ SGN NN {SCC47 VCT17}{SCT21 VCC45}{SCC46 0}<
+
+//Proteção para não deixar acontecer a infração quando o veiculo estiver
+//sem movimento
+>SED157 TT00++ UC06++&&CL45--&&SG15++ SGN NN {SCC45 VCT21}<
+
+//Se o veiculo reiniciar o movimento e cTD [CT24] ainda não atingiu TD [CT17]
+//CT17>VCT24, recomeca os beeps.
+//Soma tempo parado ao tempo da infração.
+//Continua a contagem do TT [CC45]
+>SED158 UC06-- SG15++ SGN NN {GGRVCT17VCT24}{SCT23 +VCT24}{SCT24 0}{SCC45 VCT21+3}<
+
+//Quando cTD [CC47] atingir TD [CT13]- em condição: sem infração
+//zera os contadores cTMC [CT23], cTD[CT24], cTT[CC45] e CT21 e flags [29 e 30]
+>SED159 CC47-- SG31-- SGN NN {SCT2325 0}{SCT21 0}{SSH280}{SSH300}{SCC45 0}<
+
+//----------------------------------------------------------------------------

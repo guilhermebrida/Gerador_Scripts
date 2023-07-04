@@ -1,0 +1,23 @@
+//*********************************
+//*  Modo Sleep                   *
+//*********************************
+
+//Verifica se esta na tela 58 (sleep)
+>SUT36,TQSC,09,02,58,58<
+
+//10 segundos antes de entrar em modo sleep, envia uma mensagem com as tensões das baterias externa e interna
+>SED15 LP01++ +- GF0 V2 {STB020 QAD05,7,4 QAD06,7,4}{SSC58}<
+
+//Ao acordar do modo sleep, envia uma mensagem com as tensões das baterias externa e interna
+//Reconfigura o modo sleep para ficar somente 120s acordado
+>SED16 LP03++ +- GF0 V2 {STB020 QAD05,7,4 QAD06,7,4}{VSKO060001200015}{SCC36 15}<
+
+//Ao ligar a ignição estiver na tela sleep sem motorista, vai para a tela inicial.
+>SED17 LP03++^^IN07++ UC36++&&SG06--&&IN07++ SGN NN {SSC00}<
+
+>VSPK,2350,2200,1170,1130,0360,0340,0350,0340,0350,0340,0430,0425,0340,0800,0450,+50,+70,0000,0000,0000<
+
+//Modo Sleep
+>VSKO060006000015_CAN1_EVP03600_AUX1<
+
+//--------------------------------------------------------------------------

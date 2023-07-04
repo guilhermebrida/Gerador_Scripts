@@ -1,0 +1,108 @@
+//******************************************************
+//*  Identificação de Motorista [Banco de Motoristas]  *
+//*					mifare Interno					   *
+//******************************************************
+
+//Evento Ignição OFF - Envia mensagens 4 (Ignição Off) e 5 (Faixas de Velocidade e Tempos das Entradas Digitais)
+>SED25 IN07-- SG00++ GF0 V4 {SCC01 30}{SCT64 0}{SCT27 0}{SSH000}{SSO}<
+
+//Desabilita protocolo Ibutton
+>SIO<
+
+//Ativa identificação de Condutor
+>SSH111<
+
+//Configura e ativa o Leitor RFID
+>SMF1,00,00,06,0,3000,005,100,02,4,MF3,IC0<
+
+//ativa alarme de cartão não encontrado
+>SCT16 |1073741824<
+
+//Configura Prefixo RF
+>STB000 PLNRF,4,2<
+
+//Captura a posição final do banco de Motoristas
+>SUT28,VQRM04,C2C,3,8,4097,8099<
+
+//Captura ID do mifare
+>SUT29,TPCR_LAST,C2C,4,10,0,0<
+
+//Proteção na identificação do motorista, caso o banco do motorista não esteja definido
+>SED19 IO03++ SG06--&&SG11++&&UC28-- SGN NN {SCT57 RUT29}{SCT88 VCT16&512}{SSH061}{SCC01 30}<
+
+//Envia o codigo do motorista identificado e o mantém por 30 segundos!
+>SED20 SG06++ SG11++ GF0 V0 {STB000 PLNRF,4,2}{STB002 QCT57,7,10}{VSLP_MF0}<
+
+//Garante que terá alguma coisa no buffer
+>SED100 IN07+- SG11-- SGN NN {STB000 PLN000000000000,4,12}<
+
+//Evento que dispara alarme pedido de motorista quando a ignição é ligada
+>SED101 TT00++ IN07++&&SG06--&&SG11++ SGN NN {SCT88 VCT16&268435456}<
+
+//Limpa a variável do codigo de motorista (TB000) e flag de motorista identificado (SH060)
+>SED102 TT00++ IN07--&&CL01++ SGN NN {STB000 PLN000000000000,4,12}{SSH060}{VSLP_MF0}<
+
+//Ao ler um cartão, procura se o mesmo está contido no banco!
+//pesquisa entre os indices 4097 e a última posição (UT28)
+>SED103 IO03++ SG11++&&SG06-- SGN NN {SCT57 RUT29}{VGCT,4097,RUT28,1,QCT57,7,10}<
+
+//Caso tenha encontrado o cartão no banco de motoristas gera a identificação do motorista
+>SED104 RC00++ SG11++&&SG06-- SGN NN {STB000 PLNRF,4,2}{STB002 QCT57,7,10}{SSH061}<
+ 
+//Envia alerta para o Frotalog que encontrou o cartão do motorista na posição X e banco versão do Y
+>SED105 RC00++ SG11++&&SG06++ GF0 AX {QUV00,9,33 QCT57,7,10 VQRT4096,14,12 VGCT_IDX,8,6}<
+
+//Envia alerta para o Frotalog que naõ encontrou o cartão do motorista com banco versão do Y
+>SED106 RC03++ SG11++&&SG06-- GF0 AX  {QUV00,9,33 QCT57,7,10 VQRT4096,14,12}<
+
+//alerta indicando que o cartão é inválido
+>SED107 RC03++ +- SGN NN {SCT88 VCT16&1073741824}<
+
+//Ativa o leitor quando ign on 
+>SED18 SG00++ SG06--&&SG11++ SGN NN {VSLP_MF1}{SMF1}<
+
+//Habilita Leitor RFID integrado
+>SED221 SG11++ +- SGN NN {VSLP_MF1}{SSH060}{SCT16 |268435968}{SSO}<
+
+//Desabilita Leitor RFID integrado
+>SED222 SG11-- +- SGN NN {VSLP_MF0}{SSH060}{SCT16 &805305855}{SSO}<
+
+
+//----------------------------------------------------------------------------------
+
+//******************
+//*    Bloqueio    *
+//******************
+
+//**********************************************************
+//* Bloqueio pela Identificação *  Bloqueio Total		   *	
+//**********************************************************
+//* STP13 0 -> Sem Bloqueio	    *  STP14 0 -> Sem Bloqueio *
+//* STP13 1	-> Com bloqueio	    *  STP14 1 -> Com bloqueio *
+//**********************************************************
+
+//Captura o status do bloqueio pela identificação do motorista (TP13)
+>SUT38,QTP13,7,1,0,0<
+
+//Captura o status do bloqueio total do veículo (TP14)
+>SUT39,QTP14,7,1,0,0<
+
+//Desbloqueio pela identificação do motorista
+>SED108 TT00++ SG11--||SG06++&&UC39++ SGN NN {SSXP00}<
+
+//Bloqueio pela identificação do motorista
+>SED109 TT00++ SG11++&&SG06--&&UC38--&&IN07-- SGN NN {SSXP01}<
+
+//Desbloqueio total do veículo
+>SED196 UC38++&&UC39++ +- SGN NN {SSXP00}<
+
+//Bloqueio total do veiculo
+>SED197 TT00++ UC39--&&IN07-- SGN NN {SSXP01}<
+
+>STP13 1<
+>STP14 0<
+
+//Envia de hora em hora a configuração de bloqueio por ignição e bloqueio total
+>STD143600<
+>SED59 TD14++ +- GF0 V2 {SCT55 RUT38}{SCT54 RUT39}<
+>STP03 MFint+BM.230316<

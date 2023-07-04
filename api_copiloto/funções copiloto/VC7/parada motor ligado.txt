@@ -1,0 +1,32 @@
+//*******************************
+//*    Parada com Motor Ligado  *
+//*******************************
+
+//Tempo da Parada com Motor Ligado
+>SCT04 180<
+
+//Envia a mensagem de início de parada com motor ligado (Somente após estourar o tempo)
+>SED34 SG04++ +- GF0 V1<
+
+//Fim da Infração 
+>SED35 TT00++ UC10--||GS00++&&SG04++ GF0 V2 {STB020 QCT04,7,10 QCT69,7,6}{SSH040}<
+
+//Contagem do tempo em infração
+>SED147 TT00++ UC10++&&GS00-- SGN NN {SCT69 +1}<
+
+//Alarme/rearme do tempo
+>SED148 CC04-- UC10++&&GS00-- SGN NN {SCT88 |VCT16&1}{SCC04 VCT04}{SSH041}<
+
+//Inicio da Infração (Está com parada motor ligado)
+>SED149 TT00++ UC10++&&GS00--&&CL04++ SGN NN {SCT69 0}{SCC04 VCT04}{SSH040}<
+
+//Proteção caso não ocorra a infração
+>SED150 TT00++ UC10--||GS00++&&CL04-- SGN NN {SCC04 0}<
+
+>SED151 TT00++ UC10--||GS00++&&SG04++ SGN NN {SSH040}<
+
+//Limpa Flag utilizada
+>SSH040<
+
+
+//-----------------------------------------------------------------------------

@@ -1,0 +1,35 @@
+
+//**********************************
+//*  Uso do Limpador Parabrisa     *
+//**********************************
+
+//Padrão Desabilitado
+>SSH121<
+
+//Limpador ligado na IN02 (Discreta 3)
+>SUT02,QIN,25,1,1,1<
+>SIT02005120_INV0<
+
+//1- se acionada a entrada em condição de chuva inicia contagem.
+//2- "CL21++" evita o recarregamento do contador, caso acione - desacione e acione dentro do debounce.
+>SED70 UC02++ SG12++&&CL21++&&SG22-- SGN NN {SCC21 30}<
+
+//1- se desacionada a entrada já em condição de chuva inicia contagem.
+//2- Para a saída o recarregamento do contador é instantaneo.
+>SED71 TT00++ SG12++&&SG22++&&UC02++ SGN NN {SCC22 15}<
+
+//fim da contagem e entrada ativada
+//envia inicio de operacão em chuva.
+>SED72 CC21-- UC02++ GF0 V0 {SSH201}{SSH221}<
+
+//fim da contagem e entrada desativada
+//envia fim de operacão em chuva.
+>SED73 TT00++ CL22++&&UC02--&&SG22++ GF0 V0 {SSH201}{SSH220}<
+
+// Habilita/Desabilita uso de limpador
+>SED74 SG12+- +- SGN NN {SSH201}{SSH220}<
+
+>SSH220<
+>SSH200<
+
+//--------------------------------------------------------------------------

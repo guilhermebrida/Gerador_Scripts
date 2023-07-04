@@ -92,8 +92,8 @@
 //12 - Envio de Configuração - FW, Versionamento HW, serial HW, BaudrateCAN, Mode CAN, IMEI, Num. SIMCARD, Versão Scripts
 >SUC12 QVR,30,10 QVR,24,5 QSN,4,8 VQ29_ENA,6,9 QEN11,7,15 QEN12,7,20 QTP00,7,20 QTP01,7,20 QTP02,7,20 QTP03,7,20<
 
-//13 - Reservada tablet
->SUC13U<
+//13 - Informações enviadas para o Tablet
+>SUC13 QGP,4,40 QIN,20,8 QCT88,7,10 QCT96,7,10 QCT64,7,6 QCT27,8,4 QCT01,7,8 QCT02,7,10 QTB000,8,12 QCT19_1D,7,8 QTP14,7,1 QG2,20,23<
 
 //14 - Reservada
 >SUC14U<
@@ -143,3 +143,52 @@
 >SED29 TT00++ IN07-- SGN NN {SCT64 0}{SCT27 0}{SCT7576 0}<
 
 //--------------------------------------------------------------------------
+
+//***************
+//*  Horímetro  *
+//***************
+
+//Motor Girando
+>SUT10,QCT27,7,5,400,9999<
+
+//Incremento de Horimetro
+>SED119 TT00++ UC10++ SGN NN {SCT02 +1}<
+
+//Incremento de tempo de motor girando
+>SED129 TT00++ UC10++ SGN NN {SCT39 +1}<
+
+//Horímetro (em segundos)
+>SCT02 0<
+
+//----------------------------------------------------------------------------
+
+//***************************
+//*  	 Tempo Mvto         *
+//***************************
+
+//Tempo de Movimento
+>SGS00003255<
+>SED130 TT00++ GS00++ SGN NN {SCT40 +1}<
+
+//--------------------------------------------------------------------------
+
+//**********************************
+//*  Rotação de Troca de Marcha    *
+//**********************************
+
+//Configura a troca de Marcha
+>SUT16,QCT27,7,15,0000,9999<
+
+//Evento de Troca de Marcha
+>SED134 UC16-- IN07++ SGN NN {SCT88 VCT16&16}<
+
+//--------------------------------------------------------------------------
+
+
+//****************************************
+//*  Cálculo da variação de velocidade   *
+//****************************************
+
+>SED206 TT00++ IN07++ SGN NN {SCT76 VCT64-VCT75/1000}{SCT75 VCT64}<
+
+//----------------------------------------------------------------------------

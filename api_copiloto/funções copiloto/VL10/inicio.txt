@@ -1,0 +1,229 @@
+//**************************************************************
+//*															   *
+//*	    Script Configuração VL10  - Básico	       	           *
+//*		Anderson				       		           *
+//*															   *
+//**************************************************************
+
+//Aplicar o comando CL (CLN0000) para limpar a configuração anterior
+
+//--------------------------------------------------------------------------
+
+//********************
+//*   Inicialização  *
+//********************
+
+//Limpa os contadores Numericos
+//>SCT0095 0<
+
+//Limpa as Flags
+//>SCT96 0<
+
+//Configura a memória de registros e logger
+//>VSLG0000,8192,65536<
+
+//Limpa config Dallas Interno
+>SIO<
+
+//Configura Motorista Padrão
+>STB000 PLN000000000000,4,12<
+
+//Configura as tensões de operação.
+>VSPK,2350,2200,970,930,0360,0340,0350,0340,0350,0340,0430,0425,0340,0800,0450,+50,+70,0000,0000,0000<
+
+//--------------------------------------------------------------------------
+
+//***************************************
+//*      Mensagens Personalizadas       *
+//*            Versão 0.3               *
+//***************************************
+
+
+// 00 e 01 - Tracking
+>SUC00 PLN0.3,4,3 QGP,4,40 QUV01,9,44 QAD00,7,4 QAD,40,8 QCT64,7,6 QCT27,8,4 QCT01,7,8 QTB000,8,16<
+>SUC01 GVHVCT17,14,4 GVHVCT92,10,8 GVHVCT18,14,4 GVHVCT78,10,8 GVHVCT79,10,8 GVDVCT02/360,17,7<
+
+//02 - Reservada
+
+//03 - Ignição Ligada/Dallas
+>SUC03 QUV00,9,147<
+
+//04 - Ignição Desligada
+>SUC04 QUV00,9,147 QCT20,7,5 QCT21,7,5 QCT22,7,5 QCT23,7,5 QCT24,7,5<
+
+//05 - Complemento da Ignição OFF Tempos de Entradas Digitais (Implementa a UC6)
+>SUC05 QUV06,9,200 QCT30,7,5 QCT31,7,5 QCT32,7,5 QCT33,7,5 QCT34,7,5<
+
+//06 - Faixas de Velocidade
+>SUC06 PLN0.1,4,3 QIM,4,12 QCT40,7,5 QCT41,7,5 QCT42,7,5 QCT43,7,5 QCT44,7,5 QCT45,7,5 QCT46,7,5 QCT47,7,5<
+
+//07 - Inicio de Infracao
+>SUC07 PLN0.4,4,3 QUV00,13,200 QCT54,7,10 QCT55,7,10<
+
+//08 - Fim da Infração
+>SUC08 QUV00,9,147 QCT50,7,6 QCT51,7,6 QCT52,7,6 QCT53,7,6<
+
+//09 - Freada e Aceleração
+>SUC09 QUV00,9,147 QCT55,7,10 QCT54,7,10<
+
+//10 - Envio de Configuração - CTs
+>SUC10 QCT96,7,10 QCT16,7,10 QCT04,7,10 QCT05,7,10 QCT06,7,10 QCT07,7,10 QCT08,7,10 QCT09,7,10 QCT11,7,10 QCT12,7,10 QCT13,7,10<
+
+//11 - Envio de Configuração - Faixas de RPM e Entradas digitais
+>SUC11 QPP,20,8 QUT15,20,10 QUT04,20,9 QUT09,20,10 QUT13,20,10 QUT16,20,10 QUT17,20,10 QUT56,20,10 QIT00,4,13 QIT01,4,13<
+
+//12 - Reservada
+
+//13 - Versão Scripts e configurações
+>SUC13 QUV00,9,16 QVR,31,11 QVR,25,5 QSN,4,8 C19,5,12 QTP00,7,15 QTP01,7,15 QTP02,7,15 QTP03,7,15 QTP04,7,15 QTP05,7,15<
+
+//14 - Reservada
+
+//15 - Reservada para o Aplicativo Configurador
+
+//---------------------------------------------------------------------------
+
+//****************************************
+//*    		Grupos de Alarmes			 *
+//****************************************
+
+//Limpa a variavel de alarmes
+>SCT88 0<
+
+// Mensagem Recebida		(Alarme_30)
+// Pedido Motorista			(Alarme_28)
+// Pedido de Apontamento	(Alarme_25)
+// Excesso RPM				(Alarme_22)
+// Velocidade				(Alarme_21)
+// Banguela					(Alarme_20)
+// Aceleração Brusca		(Alarme_13)
+// Freada Brusca			(Alarme_12)
+// Cinto                	(Alarme_11)
+// Motorista Identificado	(Alarme_09)
+// Ignição On				(Alarme_08)
+// Condução Ininterrupta	(Alarme_05)
+// Troca de Marcha			(Alarme_04)
+// Troca Lim de Velocidade	(Alarme_03)
+// Parada com Motor Ligado	(Alarme_00)
+// O valor do CT16 é o somatorio dos pesos dos alarmes acima
+
+//Alarmes ativos por default
+//>SCT16 768<
+
+//Desabilita alarmes
+>SED14 TT00++ +- SGN NN {SCT88 |VCT16&2147483648}<
+
+//Alarme tipo 1 - CT88 entre 1 e 15
+//Bit 0 - Parada com Motor Ligado	-	1
+//Bit 1 - Reservado					-	2
+//Bit 2 - Reservado					-	4
+//Bit 3 - Troca Lim de Velocidade   -	8
+>SUT40,QCT88,7,10,1,15<
+>SED170 TT00++ UC40++ SGN NN {SSXP11000010B4,1,1}{SCT92 VCT88}{SCT88 0}<
+
+//Alarme tipo 2 - CT88 entre 16 e 255
+//Bit 4 - Troca de Marcha			-	16
+//Bit 5 - Condução Ininterrupta		-	32
+//Bit 6 - Reservado					-	64
+//Bit 7 - Reservado 				-	128
+>SUT41,QCT88,7,10,16,255<
+>SED171 TT00++ UC41++ SGN NN {SSXP11000010B6,1,1}{SCT92 VCT88}{SCT88 0}<
+
+//Alarme tipo 3 - CT88 entre 256 e 4095
+//Bit 8  - Ignicao On				-	256
+//Bit 9  - Motorista				-	512
+//Bit 10 - Reservado				-	1024
+//Bit 11 - Cinto     				-	2048
+>SUT42,QCT88,7,10,256,4095<
+>SED172 TT00++ UC42++ SGN NN {SSXP11000020}{SCT92 VCT88}{SCT88 0}<
+
+//Alarme tipo 4 - CT88 entre 4096 e 65535
+//Bit 12 - Freada Brusca			-	4096
+//Bit 13 - Aceleracao Brusca		-	8192
+//Bit 14 - Reservado				-	16384
+//Bit 15 - Reservado 				-	32768
+>SUT43,QCT88,7,10,4096,65535<
+>SED173 TT00++ UC43++ SGN NN {SSXP11000010B4,2,1}{SCT92 VCT88}{SCT88 0}<
+
+//Alarme tipo 5 - CT88 entre 65536 e 1048575
+//Bit 16 - Alternador				-	65536
+//Bit 17 - Temperatura Motor		-	131072
+//Bit 18 - Analogicas				-	262144
+//Bit 19 - Reservado 				-	524288
+>SUT44,QCT88,7,10,65536,1048575<
+>SED174 TT00++ UC44++ SGN NN {SSXP11000010B8,2,2}{SCT92 VCT88}{SCT88 0}<
+
+//Alarme tipo 6 - CT88 entre 1048576 e 16777215
+//Bit 20 - Banguela					-	1048576
+//Bit 21 - Velocidade				-	2097152
+//Bit 22 - RPM						-	4194304
+//Bit 23 - Reservado 				-	8388608
+>SUT45,QCT88,7,10,1048576,16777215<
+>SED175 TT00++ UC45++ SGN NN {SSXP11000010B2,5,2}{SCT92 VCT88}{SCT88 0}<
+
+//Alarme tipo 7 - CT88 entre 16777216 e 67108863
+//Bit 24 - Reservado				-	16777216
+//Bit 25 - Pedido de Apontamento	-	33554432
+>SUT46,QCT88,7,10,16777216,67108863<
+>SED176 TT00++ UC46++ SGN NN {SSXP11000010B8,1,1}{SCT92 VCT88}{SCT88 0}<
+
+//Alarme tipo 8 - CT88 entre 67108864 e 268435455
+//Bit 26 - Reservado				-	67108864
+//Bit 27 - Reservado 				-	134217728
+>SUT47,QCT88,7,10,67108864,268435455<
+>SED177 TT00++ UC47++ SGN NN {SSXP11000050}{SCT92 VCT88}{SCT88 0}<
+
+//Alarme tipo 9 - CT88 entre 268435456 e 1073741823
+//Bit 28 - Pedido Motorista			-	268435456
+//Bit 29 - Reservado				-	536870912
+>SUT48,QCT88,7,10,268435456,1073741823<
+>SED178 TT00++ UC48++ SGN NN {SSXP11000010B2,8,2}{SCT92 VCT88}{SCT88 0}<
+
+//Alarme tipo 10 - CT88 1073741824
+//Bit 30 - Mensagem Recebida		-   1073741824
+>SUT49,QCT88,7,10,1073741824,2147483647<
+>SED179 TT00++ UC49++ SGN NN {SSXP1100001B08,2,1}{SCT92 VCT88}{SCT88 0}<
+
+//Bit 31 não pode ser utilizados, pois UTs são 'signed'
+
+//---------------------------------------------------------------------------
+
+//****************************************
+//*    Ignição   (Entrada IN07) 		 *
+//*	  	Início de Operação				 *
+//****************************************
+
+//Configuração do Debounce da ignição (3 segundos tolerância ao ligar e desligar)
+>SIT07040005_INV0<
+
+//Evento Ignição ON - Envia mensagem 3 e bipe curto de 100ms, limpa variáveis.
+>SED21 IN07++ +- GF0 V3 {SCT2049 0}{CIM}{CDM}{SCT88 |VCT16&256}{SSO}<
+
+//Evento Ignição OFF - Envia mensagens 4 (Ignição Off) e 5 (Faixas de Velocidade e Tempos das Entradas Digitais)
+>SED25 IN07-- +- GF0 V4 {CIO}{SSO}{SCT64 0}{SCT27 0}<
+//Garante que o valor enviado de velocidade e RPM quando a ignição estiver desligada seja zero.
+>SED28 EV25++ +- GF0 V5 {CDM}<
+>SED29 TT00++ IN07-- SGN NN {SCT64 0}{SCT7576 0}{SCT27 0}{CDM}<
+
+//--------------------------------------------------------------------------
+
+
+//***************
+//*  Horímetro  *
+//***************
+
+//Motor Girando
+>SUT15,QCT27,7,15,400,9999<
+
+//Incremento de Horimetro
+>SED119 TT00++ UC15++ SGN NN {SCT02 +1}<
+
+//Horímetro (em segundos)
+>SCT02 0<
+
+//----------------------------------------------------------------------------
+
+//Calcula variação de Velocidade
+>SED206 TT00++ IN07++ SGN NN {SCT76 VCT64-VCT75/1000}{SCT75 VCT64}<
+
+//----------------------------------------------------------------------------

@@ -1,36 +1,69 @@
-from flask import Flask,jsonify,request,json,redirect,render_template
+from flask import Flask,jsonify,request,json,redirect,render_template, send_file
 from jinja2 import Template
 from pprint import pprint
 import re
 from datetime import date
+import sys
+# import os
+# [os.path.abspath('C:/Python_scripts/Gerador_Scripts/api_copiloto/')]
+sys.path.append('C:/Python_scripts/Gerador_Scripts/api_copiloto/')
 from validate import *
+
 
 app = Flask(__name__)
 app.static_folder = './static/css'
 
 checkbox_hardwares = ['S8','S4','S4+','S3','S3+','S1']
 
+def get_checkbox_names(vl_version):
+    checkbox_names = {
+        "Tracking": f"./api_copiloto/funções copiloto/{vl_version}/tracking.txt",
+        # "Horimetro": f"./api_copiloto/funções copiloto/{vl_version}/horimetro e tempo mov.txt",
+        "Faixas RPM": f"./api_copiloto/funções copiloto/{vl_version}/faixas RPM.txt",
+        "Discretas": f"./api_copiloto/funções copiloto/{vl_version}/discretas.txt",
+        "Excesso RPM": f"./api_copiloto/funções copiloto/{vl_version}/excesso rpm.txt",
+        "Parada motor ligado": f"./api_copiloto/funções copiloto/{vl_version}/parada motor ligado.txt",
+        "Cercas": f"./api_copiloto/funções copiloto/{vl_version}/cercas.txt",
+        "Limpador de parabrisa": f"./api_copiloto/funções copiloto/{vl_version}/limpador parabrisa.txt",
+        "Excesso de Velocidade": f"./api_copiloto/funções copiloto/{vl_version}/excesso velocidade.txt",
+        "Desaceleração brusca": f"./api_copiloto/funções copiloto/{vl_version}/desaceleracao.txt",
+        "Aceleração brusca": f"./api_copiloto/funções copiloto/{vl_version}/aceleracao.txt",
+        "Leitor Mifare externo": f"./api_copiloto/funções copiloto/{vl_version}/mifare.txt",
+        "Leitor Mifare interno": f"./api_copiloto/funções copiloto/{vl_version}/mifare interno.txt",
+        "Condução ininterrupta": f"./api_copiloto/funções copiloto/{vl_version}/conducao ininterrupta.txt",
+        "Modo Sleep": f"./api_copiloto/funções copiloto/{vl_version}/sleep.txt",
+        "Rotas SP": f"./api_copiloto/funções copiloto/{vl_version}/Rotas SP.txt",
+        "Tablet": f"./api_copiloto/funções copiloto/{vl_version}/tablet.txt",
+        "Lora": f"./api_copiloto/funções copiloto/{vl_version}/LORA.txt"
+    }
+
+    return checkbox_names
+
 checkbox_names = {
-    "Tracking": "./api_copiloto/funções copiloto/tracking.txt",
-    "Horimetro": "./api_copiloto/funções copiloto/horimetro e tempo mov.txt",
-    "Faixas RPM": "./api_copiloto/funções copiloto/faixas RPM.txt",
-    "Discretas": "./api_copiloto/funções copiloto/discretas.txt",
-    "Excesso RPM": "./api_copiloto/funções copiloto/excesso rpm.txt",
-    "Parada motor ligado": "./api_copiloto/funções copiloto/parada motor ligado.txt",
-    "Cercas": "./api_copiloto/funções copiloto/cercas.txt",
-    "Limpador de parabrisa": "./api_copiloto/funções copiloto/limpador parabrisa.txt",
-    "Excesso de Velocidade": "./api_copiloto/funções copiloto/excesso velocidade.txt",
-    "Desaceleração brusca": "./api_copiloto/funções copiloto/desaceleracao.txt",
-    "Aceleração brusca": "./api_copiloto/funções copiloto/aceleracao.txt",
-    "Identificação de motorista": "./api_copiloto/funções copiloto/mifare.txt",
-    "Condução ininterrupta": "./api_copiloto/funções copiloto/conducao ininterrupta.txt",
-    "Modo Sleep": "./api_copiloto/funções copiloto/sleep.txt",
-    "Rotas SP": "./api_copiloto/funções copiloto/Rotas SP.txt"
+    "Tracking": "./api_copiloto/funções copiloto/VL8/tracking.txt",
+    # "Horimetro": "./api_copiloto/funções copiloto/VL8/horimetro e tempo mov.txt",
+    "Faixas RPM": "./api_copiloto/funções copiloto/VL8/faixas RPM.txt",
+    "Discretas": "./api_copiloto/funções copiloto/VL8/discretas.txt",
+    "Excesso RPM": "./api_copiloto/funções copiloto/VL8/excesso rpm.txt",
+    "Parada motor ligado": "./api_copiloto/funções copiloto/VL8/parada motor ligado.txt",
+    "Cercas": "./api_copiloto/funções copiloto/VL8/cercas.txt",
+    "Limpador de parabrisa": "./api_copiloto/funções copiloto/VL8/limpador parabrisa.txt",
+    "Excesso de Velocidade": "./api_copiloto/funções copiloto/VL8/excesso velocidade.txt",
+    "Desaceleração brusca": "./api_copiloto/funções copiloto/VL8/desaceleracao.txt",
+    "Aceleração brusca": "./api_copiloto/funções copiloto/VL8/aceleracao.txt",
+    "Mifare externo": "./api_copiloto/funções copiloto/VL8/mifare.txt",
+    "Mifare interno": "./api_copiloto/funções copiloto/VL8/mifare interno.txt",
+    "Condução ininterrupta": "./api_copiloto/funções copiloto/VL8/conducao ininterrupta.txt",
+    "Modo Sleep": "./api_copiloto/funções copiloto/VL8/sleep.txt",
+    "Rotas SP": "./api_copiloto/funções copiloto/VL8/Rotas SP.txt",
+    "Tablet":"./api_copiloto/funções copiloto/VL8/tablet.txt",
+    "Lora":"./api_copiloto/funções copiloto/VL8/LORA.txt"
 }
 
 checkbox_names_var = [
     "Nome do Arquivo",
     "Id Arquivo configurador",
+    "Customer Child ID",
     "Limite de Velocidade (Km/h)",
     "Limite de Velocidade com Chuva (Km/h)",
     "Limite de Velocidade Carregado (Km/h)",
@@ -46,7 +79,8 @@ checkbox_names_var = [
     "Tempo de Parada com Motor Ligado (Segundos)",
     "Tempo máximo de condução (minutos)",
     "Tempo de descanso obrigatório (minutos)",
-    "Tolerância para iniciar o descanso obrigatório (minutos)"
+    "Tolerância para iniciar o descanso obrigatório (minutos)",
+    "Nome da rede Lora"
 ]
 
 checkboxes_alarmes = {
@@ -74,7 +108,8 @@ checkboxes_alarmes = {
 
 
 def Gerar_arquivo(hw,funcoes,parametros,ALARMES):
-    with open('./api_copiloto/funções copiloto/inicio.txt', 'r') as t:
+    checkbox_names = get_checkbox_names(hw)
+    with open(f'./api_copiloto/funções copiloto/{hw}/inicio.txt', 'r') as t:
         tudo = t.read()
     for funcao in funcoes:
         if funcao in checkbox_names:
@@ -82,15 +117,17 @@ def Gerar_arquivo(hw,funcoes,parametros,ALARMES):
                 continue
             with open(checkbox_names[funcao], 'r') as t:
                 tudo += '\n' + t.read()
-    with open('./api_copiloto/funções copiloto/log.txt', 'r') as t:
+    with open(f'./api_copiloto/funções copiloto/{hw}/log.txt', 'r') as t:
         tudo += '\n' + t.read()
     if "Rotas SP" in funcoes:
-        with open('./api_copiloto/funções copiloto/Rotas SP.txt', 'r') as t:
+        with open(f'./api_copiloto/funções copiloto/{hw}/Rotas SP.txt', 'r') as t:
             tudo += '\n' + t.read()
-    with open('./api_copiloto/funções copiloto/fim.txt', 'r') as t:
+    with open(f'./api_copiloto/funções copiloto/{hw}/fim.txt', 'r') as t:
         tudo += '\n' + t.read()
     for func in parametros:
         print(func)
+        if func == "Customer Child ID":
+            tudo = Gera_tag(tudo,parametros[func])
         if func == "Limite de Velocidade (Km/h)":
             lim_vel = parametros[func]
             tudo = re.sub(">SCT11.*<",f'>SCT11 {lim_vel}900<', tudo)
@@ -149,6 +186,9 @@ def Gerar_arquivo(hw,funcoes,parametros,ALARMES):
         if func == "Tolerância para iniciar o descanso obrigatório (minutos)":
             tol_descanso = parametros[func]
             tudo = re.sub(">SCT15.*<",f'>SCT15 {int(tol_descanso)*60}<', tudo)
+        if func == "Nome da rede Lora":
+            rede_lora = ''.join(str(ord(char)) for char in parametros[func])
+            tudo = re.sub('000102030405060708090A0B0C0D0E0F',rede_lora,tudo)
         if func == "Id Arquivo configurador":
             tp = parametros[func]
             tp = re.sub(" ", "_",tp)
@@ -158,22 +198,27 @@ def Gerar_arquivo(hw,funcoes,parametros,ALARMES):
         if func == "Nome do Arquivo":
             path = parametros[func]
             path = re.sub(" ", "_",path)
-    if "Modo Sleep"and "Condução ininterrupta" in funcoes:
-        sleep = str(int(descanso_obrigatorio)*60+300).zfill(4)
-        tudo = re.sub('>VSKO0600060000900120_INS1_CAN1_EVP1800<',f'>VSKO{sleep}{sleep}00900120_INS1_CAN1_EVP1800<',tudo)
+        if "Modo Sleep"and "Condução ininterrupta" in funcoes and func == "Tempo de descanso obrigatório (minutos)":
+            sleep = str(int(descanso_obrigatorio)*60+300).zfill(4)
+            tudo = re.sub('>VSKO0600060000900120_INS1_CAN1_EVP1800<',f'>VSKO{sleep}{sleep}00900120_INS1_CAN1_EVP1800<',tudo)
     sxt = re.search('>SXT0010010101_MD1<',tudo)
     if sxt is not None:
         tudo = re.sub(">SXT0010010101_MD1<","",tudo)
         tudo = re.sub(">SSO<",">SXT0010010101_MD1<\n>SSO<",tudo)
     tudo = Gerar_alarmes(tudo,ALARMES)
-    with open(f'./{path}_{hw}.txt', 'w') as fim:
+    with open(f'C:/Users/user/Downloads/{path}_{hw}.txt', 'w') as fim:
         fim.write(tudo)
+
+
+def Gera_tag(tudo,tag):
+    return f'//[cc.id]{tag}[cc.id]\n\n' + tudo
 
 def Gerar_alarmes(tudo,alarmes):
     sct16 = 0
     for alarme in alarmes:
         sct16 = sct16 + checkboxes_alarmes[alarme]
     if sct16:
+        print(sct16)
         tudo = re.sub(">SCT16 768<",f">SCT16 {sct16}<",tudo)
     return tudo
 
@@ -191,9 +236,30 @@ def Hardwares(hw):
     if hw == 'S1':
         return 'VL6'
 
+def Get_values(checkbox_names_var):
+    values = {}
+    for var in checkbox_names_var:
+        input_name = 'input_' + str(checkbox_names_var.index(var)+1)
+        value = request.form.get(input_name)
+        if value:
+            values[var] = value
+    return values
 
+def Get_checkboxes(selected_checkboxes):
+    funcoes = []
+    for checkbox in selected_checkboxes:
+        chaves = list(checkbox_names.keys())
+        parameter_name = chaves[int(checkbox)-1]
+        funcoes.append(parameter_name)
+    return funcoes
 
-
+def Get_alarms(alarme_escolhido):
+    ALARMES = []
+    for alarm in alarme_escolhido:
+        chaves = list(checkboxes_alarmes.keys())
+        parameter_name = chaves[int(alarm)-1]
+        ALARMES.append(parameter_name)
+    return ALARMES
 
 @app.route('/')
 def index():
@@ -206,115 +272,41 @@ def index():
 
 @app.route('/submit', methods=['POST'])
 def submit():
-    funcoes = []
-    values = {}
-    ALARMES = []
     selected_checkboxes = request.form.getlist('checkbox')
+    print(selected_checkboxes)
     selected_hardwares = request.form.getlist('hw')
     alarme_escolhido = request.form.getlist('alarme')
-    hardwares_condition = validate_hardwares(selected_hardwares)
-    condition = validate_checkboxes(selected_checkboxes)
     none_hw = hardwares_is_None(selected_hardwares)
     if none_hw:
         return render_template('popup.html', none_hw=none_hw)
     hw_escolhido = str(checkbox_hardwares[int(selected_hardwares[0])-1])
+    hw = Hardwares(hw_escolhido)
+    hardwares_condition = validate_hardwares(selected_hardwares)
+    condition = validate_checkboxes(selected_checkboxes)
+    funcoes = Get_checkboxes(selected_checkboxes)
+    values = Get_values(checkbox_names_var)
+    validate = validate_path(values)
+    validate_cc = validate_cc_id(values)
+    ALARMES = Get_alarms(alarme_escolhido)
+    valida_funcao = validate_function(selected_hardwares,selected_checkboxes)
+    valida_mifare = validate_mifares(selected_checkboxes)
+    if valida_mifare:
+        return render_template('popup.html',valida_mifare=valida_mifare)
+    if valida_funcao:
+        return render_template('popup.html',valida_funcao=valida_funcao)
     if hardwares_condition:
         return render_template('popup.html', hardwares_condition=hardwares_condition)
     if condition:
-        popup_visible = True
-        # return render_template('index.html', popup_visible=popup_visible)
         return render_template('popup.html', condition=condition)
-    for checkbox in selected_checkboxes:
-        chaves = list(checkbox_names.keys())
-        parameter_name = chaves[int(checkbox)-1]
-        funcoes.append(parameter_name)
-    for var in checkbox_names_var:
-        input_name = 'input_' + str(checkbox_names_var.index(var)+1)
-        value = request.form.get(input_name)
-        if value:
-            values[var] = value
-    validate = validate_path(values)
     if validate:
         return render_template('popup.html', validate=validate)
-    for alarm in alarme_escolhido:
-        chaves = list(checkboxes_alarmes.keys())
-        parameter_name = chaves[int(alarm)-1]
-        ALARMES.append(parameter_name)
-    hw = Hardwares(hw_escolhido)
+    if validate_cc:
+        return render_template('popup.html', validate_cc=validate_cc)
     Gerar_arquivo(hw,funcoes,values,ALARMES)
-    return 'Hardware: ' + hw_escolhido + '<br>' + 'Funções desejadas:' + str(funcoes) + '<br>' + 'Valores capturados: ' + str(values) + '<br>' + 'alarmes: ' + str(ALARMES) 
+    return ('Hardware: ' + hw_escolhido + '<br>' + 'Funções desejadas:' + str(funcoes) + '<br>' 
+            + 'Valores capturados: ' + str(values) + '<br>' + 'alarmes: ' + str(ALARMES))
 
 
 
 if __name__ == '__main__':
   app.run(debug=True)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-# def Gerar_arquivo(funcoes,parametros):
-#     funcoes = funcoes
-#     parametros = parametros
-#     with open ('./api_copiloto/funções copiloto/inicio.txt', 'r') as t:
-#         tudo = t.read()
-#     if "Tracking" in funcoes:            
-#         with open ('./api_copiloto/funções copiloto/tracking.txt', 'r') as t:
-#             tudo = tudo +'\n'+ t.read()
-#     if "Horimetro" in funcoes:            
-#         with open ('./api_copiloto/funções copiloto/horimetro e tempo mov.txt', 'r') as t:
-#             tudo = tudo +'\n'+ t.read()
-#     if "Faixas RPM" in funcoes:            
-#         with open ('./api_copiloto/funções copiloto/faixas RPM.txt', 'r') as t:
-#             tudo = tudo +'\n'+ t.read()
-#     if "Discretas" in funcoes:            
-#         with open ('./api_copiloto/funções copiloto/discretas.txt', 'r') as t:
-#             tudo = tudo +'\n'+ t.read()
-#     if "Excesso RPM" in funcoes:            
-#         with open ('./api_copiloto/funções copiloto/excesso rpm.txt', 'r') as t:
-#             tudo = tudo +'\n'+ t.read()
-#     if "Parada motor ligado" in funcoes:            
-#         with open ('./api_copiloto/funções copiloto/parada motor ligado.txt', 'r') as t:
-#             tudo = tudo +'\n'+ t.read()
-#     if "Cercas" in funcoes:            
-#         with open ('./api_copiloto/funções copiloto/cercas.txt', 'r') as t:
-#             tudo = tudo +'\n'+ t.read()
-#     if "Limpador de parabrisa" in funcoes:            
-#         with open ('./api_copiloto/funções copiloto/limpador parabrisa.txt', 'r') as t:
-#             tudo = tudo +'\n'+ t.read()
-#     if "Excesso de Velocidade" in funcoes:            
-#         with open ('./api_copiloto/funções copiloto/excesso velocidade.txt', 'r') as t:
-#             tudo = tudo +'\n'+ t.read()
-#     if "Desaceleração brusca" in funcoes:            
-#         with open ('./api_copiloto/funções copiloto/desaceleracao.txt', 'r') as t:
-#             tudo = tudo +'\n'+ t.read()
-#     if "Aceleração brusca" in funcoes:            
-#         with open ('./api_copiloto/funções copiloto/aceleracao.txt', 'r') as t:
-#             tudo = tudo +'\n'+ t.read()
-#     if "Identificação de motorista" in funcoes:            
-#         with open ('./api_copiloto/funções copiloto/mifare.txt', 'r') as t:
-#             tudo = tudo +'\n'+ t.read()
-#     if "Condução ininterrupta" in funcoes:         
-#         with open ('./api_copiloto/funções copiloto/conducao ininterrupta.txt', 'r') as t:
-#             tudo = tudo +'\n'+ t.read()
-#     if "Modo Sleep" in funcoes:            
-#         with open ('./api_copiloto/funções copiloto/sleep.txt', 'r') as t:
-#             tudo = tudo +'\n'+ t.read()    
-#     with open ('./api_copiloto/funções copiloto/fim.txt', 'r') as t:
-#         tudo = tudo +'\n'+ t.read()
-#     with open('./teste.txt','w') as fim:
-#         fim.write(tudo)
-    # print(tudo)

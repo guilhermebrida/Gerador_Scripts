@@ -1,0 +1,54 @@
+
+//********************
+//*   Faixas RPM     *
+//********************
+
+//************************************************************
+//* Faixas de RPM:	* Descrição			* PR * CT * Evento   *
+//************************************************************
+//* 0400 a 1100  RPM  	* Marcha Lenta		* 11 * 20 *  110 *
+//* 1101 a 1299 RPM  	* Entre Faixas A	* 12 * 21 *  111 *
+//* 1300 a 4000 RPM  	* Faixa Verde		* 13 * 22 *  112 *
+//* 4001 a 4499 RPM  	* Entre Faixas B 	* 14 * 23 *  113 *
+//* 4500 a 9999 RPM  	* Excesso de RPM	* 15 * 24 *  114 *
+//************************************************************
+
+//RPM Marcha Lenta
+>SUT04,QCT27,7,15,400,1000<
+>SED110 TT00++ UC04++ SGN NN {SCT20 +1}<
+
+//RPM Entre Faixas A
+>SUT05,QCT27,7,15,1001,1199<
+>SED111 TT00++ UC05++ SGN NN {SCT21 +1}<
+
+//RPM Faixa Verde
+>SUT09,QCT27,7,15,1200,4500<
+>SED112 TT00++ UC09++ SGN NN {SCT22 +1}<
+
+//RPM Entre Faixas B
+>SUT10,QCT27,7,15,4501,4999<
+>SED113 TT00++ UC10++ SGN NN {SCT23 +1}<
+
+//RPM Excesso
+>SUT13,QCT27,7,15,5000,9999<
+>SED114 TT00++ UC13++ SGN NN {SCT24 +1}<
+
+//RPM Faixa Verde Ext. (Freio Motor)
+>SUT16,QCT27,7,15,9999,9999<
+
+//RPM Ex. RPM Evento (Freio Motor)
+>SUT17,QCT27,7,15,9999,9999<
+
+//--------------------------------------------------------------------------
+
+//**********************************
+//*  Rotação de Troca de Marcha    *
+//**********************************
+
+//Configura a troca de Marcha
+>SUT56,QCT27,7,15,0000,9999<
+
+//Evento de Troca de Marcha
+>SED160 UC56-- IN07++ SGN NN {SCT88 VCT16&16}<
+
+//--------------------------------------------------------------------------

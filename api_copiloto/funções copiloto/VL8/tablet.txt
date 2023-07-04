@@ -1,0 +1,52 @@
+
+//********************
+//* Watchdog Tablet  *
+//********************
+
+//O Tablet envia um SCC50 10 a cada 10 segundos, mantendo o contador em um valor alto.
+//Caso falte a comunicação com o tablet o contador zera e dispara o evento 05
+>SED05 CL50++ IN07++ GF0 V0 {SSH271}<
+
+//Informa que a conexão foi reestabelecida entre o tablet e copiloto,
+//O tablet reenvia a SCC50 10 a cada 10 segundos, mantendo o contador em um valor alto.
+>SED04 CL50-- IN07++ GF0 V0 {SSH271}<
+
+//----------------------------------------------------------------------------------
+
+//************************
+//* Apontamentos Tablet  *
+//************************
+
+//Captura as mensagens e Apontamentos TBL enviadas pelo tablet
+>SRU01 TBL,4,000,050<
+
+//Mensagens do tablet que começam com TBL são capturadas e repassadas no evento 68
+>SED68 RU01++ +- GF0 V2 {STB020 QRU01,39,40}<
+
+//Envio para o tablet confirmando que o VL10 recebeu a mensagem
+>SED192 RU01++ +- TRM AX {QRU01,39,42}<
+
+//Captura o apontamento atual na CT19
+//TSTA=310
+>SRU02 TSTA,6,5,10,19,1,ACK<
+
+//----------------------------------------------------------------------------------
+
+//**********************
+//* Informações Tablet *
+//**********************
+
+//Envia informações do copiloto para o tablet
+>SED169 TT00++ SG27++&&RU01-- TRM UD<
+
+//----------------------------------------------------------------------------------
+
+//******************
+//*   Heartbeat    *
+//******************
+
+//Heartbeat GPRS
+//Para garantir que só vai tentar mandar gprs quando estiver com o socket aberto.
+>SED58 TD01++ GR21++&&IA00--&&BF17-- GR0_SL V0<
+
+//----------------------------------------------------------------------------------

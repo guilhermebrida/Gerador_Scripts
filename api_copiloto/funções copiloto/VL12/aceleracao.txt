@@ -1,0 +1,16 @@
+
+//********************************
+//*          Aceleração           *
+//********************************
+
+//Limite de Aceleração Brusca
+>SCT09 15<
+
+//Captura do limite e trigger de Aceleração Brusca
+>SUT19,QCT09,7,10,4,150<
+>SUT21,QCT76,7,10,UT19,150<
+
+//Infração de Aceleração Brusca
+>SED208 UC21++ IN07++&&UC19++ GF0 V9 {SCT55 RUT21}{SCT54 VCT09}{SCT88 VCT16&8192}<
+
+//--------------------------------------------------------------------------

@@ -60,7 +60,7 @@ input[type="checkbox"] {
 }
 
 input[type="text"],
-input[type="number"] {
+input[type="tel"] {
     padding: 5px;
     border: 1px solid #ccc;
     border-radius: 3px;

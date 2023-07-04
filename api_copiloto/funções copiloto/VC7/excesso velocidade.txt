@@ -1,0 +1,48 @@
+
+//*******************************
+//*    Excesso Velocidade       *
+//*******************************
+	
+//Limpa Flag de fim de tolerancia
+>SSH020<
+
+//Previsao para Flag de troca de limite de velocidade
+>SSH200<
+
+//Tolerancia Limite de Velocidade (10segundos)
+>SCT06 10<
+
+//Limite de Velocidade
+>SCT11 80999<
+
+//Limite de Velocidade Tempo Chuva
+>SCT12 60999<
+
+//Limite de Velocidade Corrente
+>SCT10 VCT11<
+
+//Trigger para o Excesso de Velocidade	 
+//(UC01-- indica fora da faixa de velocidade)
+>SUT00,QCT10,7,10,0,0< 
+>SUT01,QCT64,7,15,UT00,255000<
+
+//Fim da Tolerancia e ainda está em excesso - Envia mensagem de inicio
+>SED30 CC06-- UC01++ GF0 V1 {SCT60 RUT00}{SSH011}{SSH200}<
+
+//Fim da Infração
+//Dados: Limite, Velocidade Maxima, RPM e Duração
+>SED31 TT00++ UC01--||SG21++&&SG01++ GF0 V2 {STB020 QCT60_6D,7,3 QCT61,9,3 QCT62,8,4 QCT63,7,6}{SSH010}<
+
+//Início da Infração, dispara Tolerancia
+>SED140 TT00++ CL06++&&UC01++&&SG01-- SGN NN {SCT6063 0}{SCC06 VCT06}{SSH210}<
+
+//Alarme da infração de Excesso de Velocidade - H200000 = 2097152
+//Captura a maior velocidade dentro da infração
+//Contabiliza a duração do excesso de velocidade
+>SED141 TT00++ UC01++ SGN NN {SCT63 +1}{SCT88 |VCT16&2097152}<
+>SED142 TT00++ UC01++ SGN NN {SCT50 VCT64/1000}{GGRVCT50VCT61}{SCT61 VCT50}{SCT62 VCT27}<
+
+//Quando dentro do limite de velocidade zera tolerancia
+>SED143 UC01-- +- SGN NN {SCC06 0}<
+
+//--------------------------------------------------------------------------

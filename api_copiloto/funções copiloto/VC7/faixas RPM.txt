@@ -1,0 +1,95 @@
+
+//********************
+//*   Faixas RPM     *
+//********************
+
+//Motor Girando
+>SUT10,QCT27,7,5,400,9999<
+>SED114 TT00++ UC10++ SGN NN {SCT43 +1}<
+
+//RPM Marcha Lenta
+>SUT11,QCT27,7,15,400,1100<	
+>SED111 TT00++ UC11++ SGN NN {SCT44 +1}<
+
+//RPM Faixa Verde
+>SUT12,QCT27,7,15,1200,4000<
+>SED112 TT00++ UC12++ SGN NN {SCT45 +1}<
+
+//RPM Excesso
+>SUT13,QCT27,7,15,5500,9999<
+>SED113 TT00++ UC13++ SGN NN {SCT46 +1}<
+
+//RPM Faixa Verde Ext. (Freio Motor)
+>SUT14,QCT27,7,15,9999,9999<
+
+//RPM Ex. RPM Evento (Freio Motor)
+>SUT15,QCT27,7,15,9999,9999<
+
+//--------------------------------------------------------------------------
+
+//**********************************
+//*  Rotação de Troca de Marcha    *
+//**********************************
+
+//Configura a troca de Marcha
+>SUT16,QCT27,7,15,0000,9999<
+
+//Evento de Troca de Marcha
+>SED116 UC16-- IN07++ SGN NN {SCT88 |VCT16&16}<
+
+//--------------------------------------------------------------------------
+
+
+//***************************
+//*  	 Faixas Velocidade  *
+//***************************
+	
+//Tempo de Movimento
+>SGS00003255<
+>SED130 TT00++ GS00++ SGN NN {SCT42 +1}<
+
+//Faixa de Velocidade 1 - Configuração
+>SGS01003020<
+//Faixa de Velocidade 1 - Conta Tempo
+>SED131 TT00++ GS01++ SGN NN {SCT35 +1}<
+
+//Faixa de Velocidade 2 - Configuração
+>SGS02021040<
+//Faixa de Velocidade 2 - Conta Tempo
+>SED132 TT00++ GS02++ SGN NN {SCT36 +1}<
+
+//Faixa de Velocidade 3 - Configuração
+>SGS03041060<
+//Faixa de Velocidade 3 - Conta Tempo
+>SED133 TT00++ GS03++ SGN NN {SCT37 +1}<
+
+//Faixa de Velocidade 4 - Configuração
+>SGS04061080<
+//Faixa de Velocidade 4 - Conta Tempo
+>SED134 TT00++ GS04++ SGN NN {SCT38 +1}<
+
+//Faixa de Velocidade 5 - Configuração
+>SGS05081100<
+//Faixa de Velocidade 5 - Conta Tempo
+>SED135 TT00++ GS05++ SGN NN {SCT39 +1}<
+
+//Faixa de Velocidade 6 - Configuração
+>SGS06101120<
+//Faixa de Velocidade 6 - Conta Tempo
+>SED136 TT00++ GS06++ SGN NN {SCT40 +1}<
+
+//Faixa de Velocidade 7 - Configuração
+>SGS07121999<
+//Faixa de Velocidade 7 - Conta Tempo
+>SED137 TT00++ GS07++ SGN NN {SCT41 +1}<
+
+//Verifica se o veículo já se movimentou dentro do trecho
+>SUT03,QCT42,7,5,0,3<
+
+//Captura o horário de início de movimento
+>SED138 TT00++ GS00++&&UC03++ SGN NN {STB100 QGP,4,12}<
+
+//Limpa o horário de início de movimento após um final de trecho.
+>SED139 TT00++ SG26-- SGN NN {STB100 PLN010117000000,4,12}<
+
+//--------------------------------------------------------------------------

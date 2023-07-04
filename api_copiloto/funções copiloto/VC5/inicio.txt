@@ -1,0 +1,238 @@
+//**************************************************************
+//*															   *
+//*	         Script Configuração Base VC5	       	   		   *
+//*															   *
+//**************************************************************
+
+//********************
+//*   Inicialização  *
+//********************
+
+//Desliga Modo Sleep
+>VSKO000000000000<
+
+//Configura Motorista Padrão
+>STB000 PLN000000000000,4,12<
+
+//Configura as tensões de operação
+>VSPK,2350,2200,970,930,0360,0340,0350,0340,0350,0340,0430,0425,0340,0800,0450,+50,+70,0000,0000,0000<
+
+//--------------------------------------------------------------------------
+
+//***************************************
+//*      Mensagens Personalizadas       *
+//*            Versão 0.1               *
+//***************************************
+
+//Mensagem de rastreamento mínimo
+//RUV00 => Versão(4);Id_Login/Id_Trecho(6);GP(40);RPM(4);Hodometro(1 a 8);Horimetro(7);Motorista(1 a 16)
+//GP    => Data e Hora(12) Latitude(8) Longitude(9) Velocidade(3) Heading(3) Q_GPS(3) Tempo Ult Coord Valida (2) Ent Digitais (2)
+//Tamanho Mínimo: 79 bytes
+//Tamanho Máximo: 102 bytes
+>SUC00 PLNF010,4,4 QCT17_6H,7,6 QGP,4,40 QTB000,8,16 QCT27_4D,7,4 QCT01_1D,7,8 GVDVCT02/360,17,7<
+	
+//Mensagem de rastreamento completa
+//RUV01 => RUV00(69 a 92 bytes);Alarmes(1 a 8);Velocidade GPS (3),Digital Virtual 1(8),Digital Virtual 2(8)
+//Tamanho Mínimo:  bytes
+//Tamanho Máximo: 133 bytes
+>SUC01 QUV00,9,100 QCT92_1H,7,8 QGV,29,3 QCT78_8H,7,8 QCT79_8H,7,8<
+
+//Envio de Texto (Ex: Apontamentos, Mensagens)
+//RUV03 => RUV01 (93 a 123);Dado_Num_Texto (1 a 40)
+//Tamanho Mínimo: 104 bytes
+//Tamanho Máximo: 174 bytes
+>SUC02 QUV01,9,135 QTB020,8,40<
+	
+//03 - Reservada
+>SUC03U<
+
+//Fim de Operação
+//RUV04 => RUV01 (93 a 123);Inicio Mov;Tempo Movimento(1 a 4);Tempo Motor Girando;Tempo Marcha Lenta(1 a 4);Tempo Faixa Verde(1 a 4);Tempo em Excesso RPM(1 a 4)
+//Tamanho Mínimo: 126 bytes
+//Tamanho Máximo: 177 bytes
+>SUC04 QUV01,9,135 QTB100,8,12 QCT42_1D,7,5 QCT43_1D,7,5 QCT44_1D,7,5 QCT45_1D,7,5 QCT46_1D,7,5<
+
+//Fim de Operação (Faixas de Velocidade) Opcional
+//Fim de Operação (Faixas de velocidade, tempos entrada discretas)
+//					IN0			  IN1	       IN2          IN3           IN4         IN7
+>SUC05 QUV06,9,120 QCT29_1D,7,5 QCT30_1D,7,5 QCT31_1D,7,5 QCT32_1D,7,5 QCT33_1D,7,5 QCT34_1D,7,5<
+
+//				  (3 a 20 )		(21 a 40)    (41 a 60)   (61 a 80)     (81 a 100)  (101 a 120) (>120)
+>SUC06 QUV00,9,24 QCT35_1D,7,5 QCT36_1D,7,5 QCT37_1D,7,5 QCT38_1D,7,5 QCT39_1D,7,5 QCT40_1D,7,5 QCT41_1D,7,5<
+
+//07 - Reservada
+>SUC07U<	   
+	   
+//08 - Reservada
+>SUC08U<
+	   	      
+//09 - Reservada
+>SUC09U<
+
+//10 - Versionamento (FW, Scripts) 
+>SUC10 QUV00,9,24 QVR,C20,4 QVR,C20,3 QSN,4,8 QEN12,7,20 QTP00,7,15 QTP01,7,15 QTP02,7,15 QTP03,7,15 QTP04,7,15 QTP05,7,15<
+	   	   
+//11 - Configurações do Equipamento
+>SUC11 QUV00,9,24 QCT16_1H,7,8 QCT00,7,8 QCT01,7,8 QCT02,7,10 QCT04,7,5 QCT05,7,6 QCT06,7,5 QCT07,7,6 GVD0-VCT08,17,9 QCT09,7,5<
+	   	      
+//12 - Configurações do Equipamento
+>SUC12 QUV00,9,24 QPP,24,4 QUT10,19,10 QUT11,19,10 QUT12,19,11 QUT13,19,11 QUT14,19,11 QUT15,19,11 QUT16,19,8 QIT00,4,13 QIT01,4,13<
+
+//13 - Configurações do Equipamento
+>SUC13 QUV00,9,24 QCT96_8H,7,8 C19,5,12 GCH,C20,4 QTD02,4,18 QTD03,4,18 QTD05,4,18 QTD06,4,18 QTD07,4,18<
+	   
+//14 - Reservada
+>SUC14U<
+	   	      
+//15 - Reservada
+>SUC15U<
+
+//---------------------------------------------------------------------------
+
+//****************************************
+//*    		Grupos de Alarmes			 *
+//****************************************
+
+//Limpa a variavel de alarmes
+>SCT88 0<
+>SCT92 0<
+
+//Desabilita alarmes
+>SED09 TT00++ +- SGN NN {SCT88 VCT16&2147483648}<
+
+//Alarme tipo 1 - CT88 entre 1 e 15
+//Bit 0 - Parada com Motor Ligado	-	1
+//Bit 1 - Reservado					-	2
+//Bit 2 - Reservado					-	4
+//Bit 3 - Troca LIV 				-	8
+//SSXP11000010B4,1,1
+>SUT40,QCT88,7,10,1,15< 
+>SED170 TT00++ UC40++ SGN NN {BEP004005}{SCT92 VCT88}{SCT88 0}<
+
+//Alarme tipo 2 - CT88 entre 16 e 255
+//Bit 4 - Troca de Marcha			-	16
+//Bit 5 - Reservado					-	32
+//Bit 6 - Reservado					-	64
+//Bit 7 - Reservado 				-	128
+//SSXP11000010B6,1,1
+>SUT41,QCT88,7,10,16,255<
+>SED171 TT00++ UC41++ SGN NN {BEP006005}{SCT92 VCT88}{SCT88 0}<
+
+//Alarme tipo 3 - CT88 entre 256 e 4095
+//Bit 8  - Ignicao On				-	256
+//Bit 9  - Motorista				-	512
+//Bit 10 - Reservado				-	1024
+//Bit 11 - Reservado 				-	2048 
+//SSXP11000020
+>SUT42,QCT88,7,10,256,4095< 
+>SED172 TT00++ UC42++ SGN NN {BEP001005}{SCT92 VCT88}{SCT88 0}<
+
+//Alarme tipo 4 - CT88 entre 4096 e 65535
+//Bit 12 - Freada Brusca			-	4096
+//Bit 13 - Aceleracao Brusca		-	8192
+//Bit 14 - Reservado				-	16384
+//Bit 15 - Reservado 				-	32768
+//SSXP11000010B4,2,1
+>SUT43,QCT88,7,10,4096,65535<
+>SED173 TT00++ UC43++ SGN NN {BEP004016}{SCT92 VCT88}{SCT88 0}<
+
+//Alarme tipo 5 - CT88 entre 65536 e 1048575
+//Bit 16 - Alternador				-	65536
+//Bit 17 - Temperatura Motor		-	131072
+//Bit 18 - Analogicas				-	262144
+//Bit 19 - Reservado 				-	524288 
+//SSXP11000010B8,2,2 
+>SUT44,QCT88,7,10,65536,1048575< 
+>SED174 TT00++ UC44++ SGN NN {BEP008032}{SCT92 VCT88}{SCT88 0}<
+
+//Alarme tipo 6 - CT88 entre 1048576 e 16777215
+//Bit 20 - Banguela					-	1048576
+//Bit 21 - Velocidade				-	2097152
+//Bit 22 - RPM						-	4194304
+//Bit 23 - Reservado 				-	8388608
+//SSXP11000010B2,5,2 
+>SUT45,QCT88,7,10,1048576,16777215< 
+>SED175 TT00++ UC45++ SGN NN {BEP001020}{SCT92 VCT88}{SCT88 0}<
+							            
+//Alarme tipo 7 - CT88 entre 16777216 e 67108863
+//Bit 24 - Reservado				-	16777216
+//Bit 25 - Pedido de Apontamento	-	33554432
+//SSXP11000010B8,1,1
+>SUT46,QCT88,7,10,16777216,67108863<
+>SED176 TT00++ UC46++ SGN NN {BEP008008}{SCT92 VCT88}{SCT88 0}<
+
+//Alarme tipo 8 - CT88 entre 67108864 e 268435455
+//Bit 26 - Reservado				-	67108864
+//Bit 27 - Reservado 				-	134217728
+//SSXP11000050
+>SUT47,QCT88,7,10,67108864,268435455< 
+>SED177 TT00++ UC47++ SGN NN {BEP001050}{SCT92 VCT88}{SCT88 0}<
+										 
+//Alarme tipo 9 - CT88 entre 268435456 e 1073741823
+//Bit 28 - Pedido Motorista			-	268435456
+//Bit 29 - Reservado				-	536870912
+//SSXP11000010B2,8,2
+>SUT48,QCT88,7,10,268435456,1073741823< 
+>SED178 TT00++ UC48++ SGN NN {BEP001080}{SCT92 VCT88}{SCT88 0}<
+
+//Alarme tipo 10 - CT88 1073741824
+//Bit 30 - Mensagem Recebida		-   1073741824
+//SSXP1100001B08,2,1
+>SUT49,QCT88,7,10,1073741824,2147483647< 
+>SED179 TT00++ UC49++ SGN NN {BEP008016}{SCT92 VCT88}{SCT88 0}<
+
+//Bit 31 não pode ser utilizados, pois UTs são 'signed'
+
+//Limpa a variável do último alarme após envio de um AVL
+>SED199 TD02++||TD03++ +- SGN NN {SCT92 0}<
+
+//----------------------------------------------------------------------------
+
+//************************************
+//*    Ignição   (Entrada IN07) 	 *
+//************************************
+
+//Configuração do Debounce da ignição (4 segundos tolerância ao ligar e 0,5s ao desligar)
+>SIT07040005_INV0<
+>SED125 TT00++ IN07++ SGN NN {SCT34 +1}<
+
+//--------------------------------------------------------------------------
+
+//****************************
+//*     Trecho/Operação		 *
+//****************************
+
+//Evento Inicio de Operação
+>SED26 TT00++ IN07++&&SG26--&&CL36++ GF0 V1 {SCT2946 0}{SSH261}{SSH201}{SSH250}<
+
+//Veículo foi desligado
+>SED29 TT00++ IN07--&&UC10--&&GS00--&&SG26++ SGN NN {SSH251}<
+
+//Evento Fim de Operação
+>SED206 TT00++ SG25++&&SG26++ GF0 V5<
+>SED207 TT00++ SG25++&&SG26++ GF0 V4 {SSH260}<
+
+//--------------------------------------------------------------------------
+
+//***************
+//*  Horímetro  *
+//***************
+
+//Incrementa o tempo de motor ligado a cada segundo
+>SED119 TT00++ UC10++ SGN NN {SCT02 +1}<
+
+//Variavel que armazena o horímetro em segundos
+>SCT02 0<
+
+//--------------------------------------------------------------------------
+
+//****************************************
+//*  Cálculo da variação de velocidade   *
+//****************************************
+
+>SED00 TT00++ IN07++&&SG07++ SGN NN {SCT76 VCT64-VCT75/1000}{SCT75 VCT64}<
+>SED06 IN07++ +- SGN NN {SCT75 VCT64}{SSH071}<
+>SED07 TT00++ IN07--&&SG07++ SGN NN {SCT76 0}{SSH070}<
+
+
+//----------------------------------------------------------------------------

@@ -1,0 +1,17 @@
+
+//******************************
+//*		Aceleração			   *
+//******************************
+
+>SCT09 15<
+
+//Trigger de Aceleração Brusca
+>SUT20,QCT09,7,10,4,150<
+>SUT21,QCT76,7,10,UT20,40<
+
+
+//Infração de Aceleração
+//Dados: Limite, Aceleração registrada 
+>SED41 UC21++ UC20++&&SG07++ GF0 V2 {STB020 QCT09,9,3 GVDRUT21,17,3}{SCT88 |VCT16&8192}<
+
+//--------------------------------------------------------------------------

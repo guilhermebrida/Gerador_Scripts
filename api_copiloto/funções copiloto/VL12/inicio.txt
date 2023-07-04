@@ -1,0 +1,148 @@
+//**************************************************************
+//*															   *
+//*	    Script Configuração VL12  - Básico	       	           *
+//*															   *
+//**************************************************************
+
+//Aplicar o comando CL (CLN0000) para limpar a configuração anterior
+
+//--------------------------------------------------------------------------
+
+//********************
+//*   Inicialização  *
+//********************
+
+//Limpa os contadores Numericos
+//>SCT0095 0<
+
+//Limpa as Flags
+//>SCT96 0<
+
+//Configura a memória de registros e logger
+//>VSLG0000,16384,622592<
+
+//Limpa config Dallas Interno
+>SIO<
+
+//Habilita uso da CT11
+//>TCFG13,9999<
+
+//Configura Motorista Padrão
+>STB000 PLN000000000000,4,12<
+
+//Configura as tensões de operação.
+>VSPK,2350,2200,970,930,0360,0340,0350,0340,0350,0340,0430,0425,0340,0800,0450,+50,+70,0000,0000,0000<
+
+//--------------------------------------------------------------------------
+
+//***************************************
+//*      Mensagens Personalizadas       *
+//*            Versão 0.3               *
+//***************************************
+
+
+// 00 e 01 - Tracking
+>SUC00 PLN0.3,4,3 QGP,4,40 QUV01,9,44 QAD00,7,4 QAD,40,8 QCT64,7,6 QCT27,8,4 QCT01,7,8 QTB000,8,16<
+>SUC01 GVHVCT18,14,4 GVHVCT92,10,8 PLN0,4,1 GVHVCT78,10,8 GVHVCT79,10,8 GVDVCT02/360,17,7<
+
+//02 - Reservada
+
+//03 - Ignição Ligada/Dallas
+>SUC03 QUV00,9,147<
+
+//04 - Ignição Desligada
+>SUC04 QUV00,9,147 QCT20,7,5 QCT21,7,5 QCT22,7,5 QCT23,7,5 QCT24,7,5<
+
+//05 - Complemento da Ignição OFF Tempos de Entradas Digitais (Implementa a UC6)
+>SUC05 QUV06,9,200 QCT30,7,5 QCT31,7,5 QCT32,7,5 QCT33,7,5 QCT34,7,5<
+
+//06 - Faixas de Velocidade
+>SUC06 PLN0.1,4,3 QIM,4,12 QCT40,7,5 QCT41,7,5 QCT42,7,5 QCT43,7,5 QCT44,7,5 QCT45,7,5 QCT46,7,5 QCT47,7,5<
+
+//07 - Inicio de Infracao
+>SUC07 PLN0.4,4,3 QUV00,13,200 QCT54,7,10 QCT55,7,10<
+
+//08 - Fim da Infração
+>SUC08 QUV00,9,147 QCT50,7,6 QCT51,7,6 QCT52,7,6 QCT53,7,6<
+
+//09 - Freada e Aceleração
+>SUC09 QUV00,9,147 QCT55,7,10 QCT54,7,10<
+
+//10 - Envio de Configuração - CTs
+>SUC10 QCT96,7,10 QCT16,7,10 QCT04,7,10 QCT05,7,10 QCT06,7,10 QCT07,7,10 QCT08,7,10 QCT09,7,10 QCT11,7,10 QCT12,7,10 QCT13,7,10<
+
+//11 - Envio de Configuração - Faixas de RPM e Entradas digitais
+>SUC11 QPP,20,8 QUT15,20,10 QUT04,20,9 QUT09,20,10 QUT13,20,10 QUT16,20,10 QUT17,20,10 QUT56,20,10 QIT00,4,13 QIT01,4,13<
+
+//12 - Reservada
+
+//13 - Versão Scripts e configurações
+>SUC13 QUV00,9,16 QVR,31,11 QVR,25,5 QSN,4,8 C19,5,12 QTP00,7,15 QTP01,7,15 QTP02,7,15 QTP03,7,15 QTP04,7,15 QTP05,7,15<
+
+//14 - Reservada
+
+//15 - Reservada para o Aplicativo Configurador
+
+//---------------------------------------------------------------------------
+
+//****************************************
+//*    		Grupos de Alarmes			 *
+//****************************************
+
+//Limpa a variavel de alarmes
+>SCT88 0<
+
+//Memoria Reservada para arquivos MP3
+//MP3 = 200K * 16 = 3 MBytes
+>VSRM6,1,8192,208383<
+
+//Configurar RM06 para áudio
+//onde: 8 volume do áudio, RM06 definido para áudio
+>TCFG04,806< 
+
+//Alarmes - CT88 entre 1 e 2147483647
+>SUT49,QCT88,7,10,1,2147483647<
+>SED209 TT00++ UC49++ SGN NN {SCT88 |VCT16&2147483648}{SCT92 VCT88}<
+>SED210 TT00++ UC49++&&CL26++ SGN NN {STB021 QCT88_8H,7,8}{PFL,%QTB021,8,8,1,8}{SCT88 0}{SCC26 6}<
+
+//---------------------------------------------------------------------------
+
+//****************************************
+//*    Ignição   (Entrada IN07) 		 *
+//*	  	Início de Operação				 *
+//****************************************
+
+//Configuração do Debounce da ignição (3 segundos tolerância ao ligar e desligar)
+>SIT07040005_INV0<
+
+//Evento Ignição ON - Envia mensagem 3 e bipe curto de 100ms, limpa variáveis.
+>SED21 IN07++ +- GF0 V3 {SCT2034 0}{SCT4147 0}{CIM}{SCT88 VCT16&256}{SCT18 +1}{SSO}<
+
+//Evento Ignição OFF - Envia mensagens 4 (Ignição Off) e 5 (Faixas de Velocidade e Tempos das Entradas Digitais)
+>SED25 IN07-- +- GF0 V4 {CIO}{SSO}{SCT64 0}{SCT27 0}<
+//Garante que o valor enviado de velocidade e RPM quando a ignição estiver desligada seja zero.
+>SED28 EV25++ +- GF0 V5<
+>SED29 TT00++ IN07-- SGN NN {SCT64 0}{SCT7576 0}{SCT27 0}<
+
+//--------------------------------------------------------------------------
+
+
+//***************
+//*  Horímetro  *
+//***************
+
+//Motor Girando
+>SUT15,QCT27,7,15,400,9999<
+
+//Incremento de Horimetro
+>SED119 TT00++ UC15++ SGN NN {SCT02 +1}<
+
+//Horímetro (em segundos)
+>SCT02 0<
+
+//----------------------------------------------------------------------------
+
+//Calcula variação de Velocidade
+>SED206 TT00++ IN07++ SGN NN {SCT76 VCT64-VCT75/1000}{SCT75 VCT64}<
+
+//----------------------------------------------------------------------------
