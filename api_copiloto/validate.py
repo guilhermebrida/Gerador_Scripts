@@ -1,7 +1,7 @@
 
 
 def validate_checkboxes(selected_checkboxes):
-    if "6" in selected_checkboxes and "14" in selected_checkboxes:
+    if "6" in selected_checkboxes and "15" in selected_checkboxes:
         return True
     return False
 

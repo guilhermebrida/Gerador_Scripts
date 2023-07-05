@@ -4,8 +4,13 @@ from pprint import pprint
 import re
 from datetime import date
 import sys
-# import os
-# [os.path.abspath('C:/Python_scripts/Gerador_Scripts/api_copiloto/')]
+from git import Repo
+import git
+from github import Github
+from dotenv import load_dotenv
+import os
+from decouple import config
+
 sys.path.append('C:/Python_scripts/Gerador_Scripts/api_copiloto/')
 from validate import *
 
@@ -13,7 +18,9 @@ from validate import *
 app = Flask(__name__)
 app.static_folder = './static/css'
 
-checkbox_hardwares = ['S8','S4','S4+','S3','S3+','S1']
+
+
+checkbox_hardwares = ['S8','S4','S4+','S3','S3+']
 
 def get_checkbox_names(vl_version):
     checkbox_names = {
@@ -125,7 +132,6 @@ def Gerar_arquivo(hw,funcoes,parametros,ALARMES):
     with open(f'./api_copiloto/funções copiloto/{hw}/fim.txt', 'r') as t:
         tudo += '\n' + t.read()
     for func in parametros:
-        print(func)
         if func == "Customer Child ID":
             tudo = Gera_tag(tudo,parametros[func])
         if func == "Limite de Velocidade (Km/h)":
@@ -181,7 +187,6 @@ def Gerar_arquivo(hw,funcoes,parametros,ALARMES):
             tudo = re.sub(">SCT14.*<",f'>SCT14 {int(tempo_max_cond)*60}<', tudo)
         if func == "Tempo de descanso obrigatório (minutos)":
             descanso_obrigatorio = parametros[func]
-            print(descanso_obrigatorio)
             tudo = re.sub(">SCT17.*<",f'>SCT17 {int(descanso_obrigatorio)*60}<', tudo)
         if func == "Tolerância para iniciar o descanso obrigatório (minutos)":
             tol_descanso = parametros[func]
@@ -208,6 +213,8 @@ def Gerar_arquivo(hw,funcoes,parametros,ALARMES):
     tudo = Gerar_alarmes(tudo,ALARMES)
     with open(f'C:/Users/user/Downloads/{path}_{hw}.txt', 'w') as fim:
         fim.write(tudo)
+    # commit_file_to_github(f'C:/Users/user/Downloads/{path}_{hw}.txt', path)
+    commit_file_to_github(f'C:/Users/user/Downloads/{path}_{hw}.txt', path, path)
 
 
 def Gera_tag(tudo,tag):
@@ -218,7 +225,6 @@ def Gerar_alarmes(tudo,alarmes):
     for alarme in alarmes:
         sct16 = sct16 + checkboxes_alarmes[alarme]
     if sct16:
-        print(sct16)
         tudo = re.sub(">SCT16 768<",f">SCT16 {sct16}<",tudo)
     return tudo
 
@@ -243,6 +249,7 @@ def Get_values(checkbox_names_var):
         value = request.form.get(input_name)
         if value:
             values[var] = value
+    print(values)
     return values
 
 def Get_checkboxes(selected_checkboxes):
@@ -261,6 +268,19 @@ def Get_alarms(alarme_escolhido):
         ALARMES.append(parameter_name)
     return ALARMES
 
+
+
+def commit_file_to_github(file_path, branch_name, commit_message):
+    access_token = config("BRIDA_TOKEN")
+    repo_url = config("BRIDA_REPO")
+    print(repo_url)
+    g = Github(access_token)
+    repo = g.get_repo(repo_url)
+    with open(file_path, 'rb') as file:
+        file_content = file.read()
+    
+    repo.create_file(f'api_copiloto/{branch_name}.txt', commit_message, file_content)
+
 @app.route('/')
 def index():
     checkboxes = zip(range(1, len(checkbox_names) + 1), checkbox_names)
@@ -273,7 +293,6 @@ def index():
 @app.route('/submit', methods=['POST'])
 def submit():
     selected_checkboxes = request.form.getlist('checkbox')
-    print(selected_checkboxes)
     selected_hardwares = request.form.getlist('hw')
     alarme_escolhido = request.form.getlist('alarme')
     none_hw = hardwares_is_None(selected_hardwares)

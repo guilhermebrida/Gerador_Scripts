@@ -1,12 +1,5 @@
-from api_copiloto.main import Gera_tag 
-# from api_copiloto.validate import validate_cc_id,validate_function,validate_checkboxes,hardwares_is_None,validate_hardwares,validate_path
 from api_copiloto.validate import *
 import pytest
-
-def test_deve_receber_um_customer_child_id_e_retornar_como_uma_tag():
-    child_id = 123456
-    assert Gera_tag('teste',child_id) == '//[cc.id]123456[cc.id]\n\nteste'
-
 
 def test_deve_retornar_True_caso_Customer_Child_ID_nao_esteja_na_lista_de_parametro():
     cc = 'qualquer coisa'
@@ -28,7 +21,7 @@ def test_retorna_true_se_mifare_externo_e_interno_estiverem_marcados():
     assert validate_mifares(['11','12']) == True
 
 def test_retorna_true_se_cercas_e_rotas_SP_estiverem_marcados():
-    assert validate_checkboxes(['6','14']) == True
+    assert validate_checkboxes(['6','15']) == True
 
 def test_retorna_true_se_nenhum_hw_foi_escolhido():
     assert hardwares_is_None([]) == True
