@@ -1,16 +1,12 @@
 from flask import Flask,jsonify,request,json,redirect,render_template, send_file
 from jinja2 import Template
-from pprint import pprint
 import re
 from datetime import date
 import sys
-from git import Repo
-import git
 from github import Github
-from dotenv import load_dotenv
 import os
+from pprint import pprint
 from decouple import config
-
 sys.path.append('C:/Python_scripts/Gerador_Scripts/api_copiloto/')
 from validate import *
 
@@ -213,9 +209,8 @@ def Gerar_arquivo(hw,funcoes,parametros,ALARMES):
     tudo = Gerar_alarmes(tudo,ALARMES)
     with open(f'C:/Users/user/Downloads/{path}_{hw}.txt', 'w') as fim:
         fim.write(tudo)
-    # commit_file_to_github(f'C:/Users/user/Downloads/{path}_{hw}.txt', path)
-    commit_file_to_github(f'C:/Users/user/Downloads/{path}_{hw}.txt', path, path)
-
+    file_name = f'{path}_{hw}.txt'
+    commit_file_to_github(f'C:/Users/user/Downloads/{file_name}', path, path,file_name)
 
 def Gera_tag(tudo,tag):
     return f'//[cc.id]{tag}[cc.id]\n\n' + tudo
@@ -268,18 +263,32 @@ def Get_alarms(alarme_escolhido):
         ALARMES.append(parameter_name)
     return ALARMES
 
-
-
-def commit_file_to_github(file_path, branch_name, commit_message):
+def commit_file_to_github(file_path, branch_name, commit_message, file_name):
     access_token = config("BRIDA_TOKEN")
     repo_url = config("BRIDA_REPO")
-    print(repo_url)
     g = Github(access_token)
     repo = g.get_repo(repo_url)
+    arquivos = repo.get_contents("Cliente")
+    ARQUIVOS = []
+    directories = []
+    while arquivos:
+         file_content = arquivos.pop(0)
+         if file_content.type == "dir":
+            arquivos.extend(repo.get_contents(file_content.path))
+         else:
+            ARQUIVOS.append(file_content.path)
+            if os.path.dirname(file_content.path) not in directories:
+                directories.append(os.path.dirname(file_content.path))
+
+    pprint(directories)
     with open(file_path, 'rb') as file:
         file_content = file.read()
-    
-    repo.create_file(f'api_copiloto/{branch_name}.txt', commit_message, file_content)
+    if file_name in [os.path.basename(arquivo) for arquivo in ARQUIVOS]:
+        print(file_name)
+        contents = repo.get_contents(f'api_copiloto/{file_name}')
+        repo.update_file(contents.path, branch_name,file_content, contents.sha)
+    else:
+        repo.create_file(f'api_copiloto/{file_name}', commit_message, file_content)
 
 @app.route('/')
 def index():
