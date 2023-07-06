@@ -9,6 +9,7 @@ from pprint import pprint
 from decouple import config
 sys.path.append('C:/Python_scripts/Gerador_Scripts/api_copiloto/')
 from validate import *
+import requests
 
 
 app = Flask(__name__)
@@ -111,8 +112,8 @@ checkboxes_alarmes = {
 
 
 def Gerar_arquivo(hw,funcoes,parametros,ALARMES):
-    checkbox_names = get_checkbox_names(hw)
-    with open(f'./api_copiloto/funções copiloto/{hw}/inicio.txt', 'r') as t:
+    checkbox_names = get_checkbox_names(hw[0])
+    with open(f'./api_copiloto/funções copiloto/{hw[0]}/inicio.txt', 'r') as t:
         tudo = t.read()
     for funcao in funcoes:
         if funcao in checkbox_names:
@@ -120,12 +121,12 @@ def Gerar_arquivo(hw,funcoes,parametros,ALARMES):
                 continue
             with open(checkbox_names[funcao], 'r') as t:
                 tudo += '\n' + t.read()
-    with open(f'./api_copiloto/funções copiloto/{hw}/log.txt', 'r') as t:
+    with open(f'./api_copiloto/funções copiloto/{hw[0]}/log.txt', 'r') as t:
         tudo += '\n' + t.read()
     if "Rotas SP" in funcoes:
-        with open(f'./api_copiloto/funções copiloto/{hw}/Rotas SP.txt', 'r') as t:
+        with open(f'./api_copiloto/funções copiloto/{hw[0]}/Rotas SP.txt', 'r') as t:
             tudo += '\n' + t.read()
-    with open(f'./api_copiloto/funções copiloto/{hw}/fim.txt', 'r') as t:
+    with open(f'./api_copiloto/funções copiloto/{hw[0]}/fim.txt', 'r') as t:
         tudo += '\n' + t.read()
     for func in parametros:
         if func == "Customer Child ID":
@@ -207,10 +208,9 @@ def Gerar_arquivo(hw,funcoes,parametros,ALARMES):
         tudo = re.sub(">SXT0010010101_MD1<","",tudo)
         tudo = re.sub(">SSO<",">SXT0010010101_MD1<\n>SSO<",tudo)
     tudo = Gerar_alarmes(tudo,ALARMES)
-    with open(f'C:/Users/user/Downloads/{path}_{hw}.txt', 'w') as fim:
+    with open(f'C:/Users/user/Downloads/{path}_{hw[0]}.txt', 'w') as fim:
         fim.write(tudo)
-    file_name = f'{path}_{hw}.txt'
-    commit_file_to_github(f'C:/Users/user/Downloads/{file_name}', path, path,file_name)
+    commit_file_to_github(f'C:/Users/user/Downloads/{path}_{hw[0]}.txt', path, hw)
 
 def Gera_tag(tudo,tag):
     return f'//[cc.id]{tag}[cc.id]\n\n' + tudo
@@ -225,17 +225,17 @@ def Gerar_alarmes(tudo,alarmes):
 
 def Hardwares(hw):
     if hw == 'S8':
-        return 'VL8'
+        return ['VL8','Virloc8']
     if hw == 'S4':
-        return 'VC5'
+        return ['VC5', 'Vircom5']
     if hw == 'S4+':
-        return 'VC7'
+        return ['VC7','Vircom7']
     if hw == 'S3':
-        return 'VL10'
+        return ['VL10','Virloc10']
     if hw == 'S3+':
-        return 'VL12'
+        return ['VL12','Virloc12']
     if hw == 'S1':
-        return 'VL6'
+        return ['VL6', 'Virloc6']
 
 def Get_values(checkbox_names_var):
     values = {}
@@ -263,12 +263,13 @@ def Get_alarms(alarme_escolhido):
         ALARMES.append(parameter_name)
     return ALARMES
 
-def commit_file_to_github(file_path, branch_name, commit_message, file_name):
+def commit_file_to_github(file_path, branch_name, hw):
+    file_name = f'{branch_name}_{hw[0]}.txt'
     access_token = config("BRIDA_TOKEN")
     repo_url = config("BRIDA_REPO")
     g = Github(access_token)
     repo = g.get_repo(repo_url)
-    arquivos = repo.get_contents("Cliente")
+    arquivos = repo.get_contents("Virtec")
     ARQUIVOS = []
     directories = []
     while arquivos:
@@ -279,16 +280,58 @@ def commit_file_to_github(file_path, branch_name, commit_message, file_name):
             ARQUIVOS.append(file_content.path)
             if os.path.dirname(file_content.path) not in directories:
                 directories.append(os.path.dirname(file_content.path))
-
     pprint(directories)
     with open(file_path, 'rb') as file:
         file_content = file.read()
     if file_name in [os.path.basename(arquivo) for arquivo in ARQUIVOS]:
         print(file_name)
-        contents = repo.get_contents(f'api_copiloto/{file_name}')
+        contents = repo.get_contents(f'Virtec/{hw[1]}/{file_name}/')
         repo.update_file(contents.path, branch_name,file_content, contents.sha)
     else:
-        repo.create_file(f'api_copiloto/{file_name}', commit_message, file_content)
+        repo.create_file(f'Virtec/{hw[1]}/{file_name}', branch_name, file_content)
+
+
+
+@app.route('/git-clients', methods=['GET'])
+def git_clients():
+    clients_VL8 = lista_clientes('Virloc8')
+    # clients_VL10 = lista_clientes('Virloc10')
+    # clients_VL12 = lista_clientes('Virloc12')
+    # clients_VC5 = lista_clientes('Vircom5')
+    # clients_VC7 = lista_clientes('Vircom7')
+    return clients_VL8
+    # return jsonify({
+        # 'clients_VL8': clients_VL8,
+        # 'clients_VL10': clients_VL10,
+        # 'clients_VL12': clients_VL12,
+        # 'clients_VC5': clients_VC5,
+        # 'clients_VC7': clients_VC7
+    # })
+
+def lista_clientes(hardware):
+    access_token = config("BRIDA_TOKEN")
+    repo_url = config("BRIDA_REPO")
+    # g = Github(access_token)
+    # repo = g.get_repo(repo_url)
+    # arquivos = repo.get_contents("Virtec")
+    # directories = []
+    json_data = requests.get('https://api.github.com/repos/guilhermebrida/Gerador_Scripts/contents/Virtec/Virloc8/Cliente').json()
+    arquivos = [item['name'] for item in json_data]
+    while arquivos:
+         file_content = arquivos.pop(0)
+         if file_content.type == "dir":
+            arquivos.extend(repo.get_contents(file_content.path))
+         else:
+            # ARQUIVOS.append(file_content.path)
+            if os.path.dirname(file_content.path) not in directories:
+                directories.append(os.path.dirname(file_content.path).replace(f'Virtec/{hardware}/Cliente/',''))
+    return directories
+
+
+    # return ['April', 'ArcelorMittal', 'Bayer', 'Bracell Bahia', 'Bracell', 'CMOC', 'CMPC', 'CPFL',
+    #          'Corteva', 'Expresso Nepomuceno', 'Forest', 'JSL', 'MSC', 'Raizen', 'Sirtec', 'Suzano ES', 'Suzano MS', 'Syngenta',
+    #          'Terceira Vale', 'VLI', 'Valenet', 'Vecchiola', 'Veracel']
+
 
 @app.route('/')
 def index():
@@ -296,7 +339,10 @@ def index():
     checkboxes_var = zip(range(1, len(checkbox_names_var) + 1), checkbox_names_var)
     checkbox_alarmes = zip(range(1, len(checkboxes_alarmes) + 1), checkboxes_alarmes)
     checkboxes_hw = zip(range(1, len(checkbox_hardwares) + 1), checkbox_hardwares)
+    # clientes = lista_clientes()
     return render_template('index.html', checkboxes=checkboxes, checkboxes_var=checkboxes_var, alarmes=checkbox_alarmes, hardwares=checkboxes_hw)
+
+
 
 
 @app.route('/submit', methods=['POST'])

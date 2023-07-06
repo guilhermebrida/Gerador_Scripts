@@ -2,17 +2,40 @@
 <html>
 <head>
     <title>Checkboxes</title>
-    <link rel="stylesheet" href="/static/styles.css"> 
+    <link rel="stylesheet" href="/static/styles.css">
+    <script src="./api_copiloto/js/script.js"></script> 
 </head>
 <body>
     <form action="/submit" method="POST">
         <h1>Hardware</h1>
         {% for hw in hardwares %}
         <label>
-            <input type="checkbox" name="hw" value="{{ hw[0] }}">
+            <input type="checkbox" name="hw" value="{{ hw[0] }}" onclick="obterClientes(this)">
             {{ hw[1] }}
         </label>
         {% endfor %}
+        <!-- <h1>Cliente</h1>
+        <div class="dropdown">
+          <button class="dropdown-button">Profile</button>
+          <div class="dropdown-options">
+            <div class="column">
+              {% for i in range(0, clientes|length, 5) %}
+                <ul>
+                  {% for cliente in clientes[i:i+5] %}
+                    <li><a href="#">{{ cliente }}</a></li>
+                  {% endfor %}
+                </ul>
+              {% endfor %}
+            </div>
+          </div>
+        </div> -->
+        <h1>Cliente</h1>
+        <div class="dropdown">
+            <button class="dropdown-button">Cliente</button>
+            <input type="text" id="campo-cliente">
+            <div id="clientes-dropdown" class="dropdown-options">
+            </div>
+          </div>
         <h1>Funcionalidades Desejadas:</h1>
     
         {% for checkbox in checkboxes %}
@@ -53,65 +76,78 @@
         {% endfor %}
         <br>
         <input type="submit" value="Gerar Script">
+        <script>
+            // function obterClientes(hardware) {
+            //     console.log(hardware.value);
+            //     var xhr = new XMLHttpRequest();
+            //     if (hardware.value == 1) {
+            //         xhr.open('GET', 'https://api.github.com/repos/guilhermebrida/Gerador_Scripts/contents/Virtec/Virloc8/Cliente');
+            //         } else if (hardware.value == 2) {
+            //         xhr.open('GET', 'https://api.github.com/repos/guilhermebrida/Gerador_Scripts/contents/Virtec/Vircom5/Cliente');
+            //         } else if (hardware.value == 3) {
+            //         xhr.open('GET', 'https://api.github.com/repos/guilhermebrida/Gerador_Scripts/contents/Virtec/Vircom7/Cliente');
+            //         } else if (hardware.value == 4) {
+            //         xhr.open('GET', 'https://api.github.com/repos/guilhermebrida/Gerador_Scripts/contents/Virtec/Virloc10/Cliente');
+            //         } else if (hardware.value == 5) {
+            //         xhr.open('GET', 'https://api.github.com/repos/guilhermebrida/Gerador_Scripts/contents/Virtec/Virloc12/Cliente');
+            //         }
+            //     xhr.onreadystatechange = function() {
+            //     if (xhr.readyState === XMLHttpRequest.DONE) {
+            //         if (xhr.status === 200) {
+            //         var response = JSON.parse(xhr.responseText);
+            //         var nomes = response.map(function(item) {
+            //             return item.name;
+            //         });
+            //         console.log(nomes);
+            //         exibirClientes(nomes)
+            //         } else {
+            //         console.log('Erro na solicitação: ' + xhr.status);
+            //         }
+            //     }
+            //     };
+            //     xhr.send();
+                
+            // }
+            // var campoCliente = document.getElementById('campo-cliente');
+
+            // function exibirClientes(clientes) {
+            //     var dropdownOptions = document.getElementById('clientes-dropdown');
+            //     dropdownOptions.innerHTML = '';
+
+            //     var columnDiv = document.createElement('div');
+            //     columnDiv.classList.add('column');
+
+            //     var ulElement = document.createElement('ul');
+
+            //     for (var i = 0; i < clientes.length; i++) {
+            //         var cliente = clientes[i];
+            //         var liElement = document.createElement('li');
+            //         var aElement = document.createElement('a');
+            //         aElement.href = '#';
+            //         aElement.textContent = cliente;
+
+            //         aElement.addEventListener('click', function(e) {
+            //         campoCliente.value = e.target.textContent;
+            //         });
+
+            //         liElement.appendChild(aElement);
+            //         ulElement.appendChild(liElement);
+
+            //         // Adicionar uma nova lista a cada 5 clientes
+            //         if ((i + 1) % 5 === 0) {
+            //         columnDiv.appendChild(ulElement);
+            //         ulElement = document.createElement('ul');
+            //         }
+            //     }
+            //     if (ulElement.childNodes.length > 0) {
+            //         columnDiv.appendChild(ulElement);
+            //     }
+            //     dropdownOptions.appendChild(columnDiv);
+            //     console.log('Dropdown atualizado:', dropdownOptions.innerHTML); 
+            //     }
+
+          </script>
     </form>
 </body>
 </html>
 
-
-
-<!-- {% for checkbox in checkboxes %}
-{% if checkbox[1] == "Excesso de Velocidade" %}
-<label>
-    <input type="checkbox" name="checkbox" value="{{ checkbox[0] }}">
-    {{ checkbox[1] }} &emsp;&emsp;&emsp;&emsp;&emsp;
-    <input type="text" name="input_{{ checkbox[0] }}" placeholder="Tolerância (s)">
-    <input type="text" name="input_{{ checkbox[0] }}" placeholder="Limite pista seca (km/h)">
-    <input type="text" name="input_{{ checkbox[0] }}" placeholder="Limite com chuva (km/h)">
-    <input type="text" name="input_{{ checkbox[0] }}" placeholder="Limite carregado (km/h)">
-</label>
-{% elif checkbox[1] == "Parada motor ligado" %}
-<label>
-    <input type="checkbox" name="checkbox" value="{{ checkbox[0] }}">
-    {{ checkbox[1] }} &emsp;&emsp;&emsp;&emsp;&emsp;
-    <input type="text" name="input_{{ checkbox[0] }}" placeholder="Tempo de Parada">
-</label>
-{% elif checkbox[1] == "Condução ininterrupta" %}
-<label>
-    <input type="checkbox" name="checkbox" value="{{ checkbox[0] }}">
-    {{ checkbox[1] }} &emsp;&emsp;&emsp;&emsp;&emsp;
-    <input type="text" name="input_{{ checkbox[0] }}" placeholder="Tempo máximo de condução (minutos)">
-    <input type="text" name="input_{{ checkbox[0] }}" placeholder="Tempo de descanso obrigatório (minutos)">
-    <input type="text" name="input_{{ checkbox[0] }}" placeholder="Tolerância para descanso obrigatório (minutos)">
-</label>
-{% elif checkbox[1] == "Aceleração brusca" %}
-<label>
-    <input type="checkbox" name="checkbox" value="{{ checkbox[0] }}">
-    {{ checkbox[1] }} &emsp;&emsp;&emsp;&emsp;&emsp;
-    <input type="text" name="input_{{ checkbox[0] }}" placeholder="Limite de Aceleração Brusca">
-</label>
-
-{% elif checkbox[1] == "Desaceleração brusca" %}
-<label>
-    <input type="checkbox" name="checkbox" value="{{ checkbox[0] }}">
-    {{ checkbox[1] }} &emsp;&emsp;&emsp;&emsp;&emsp;
-    <input type="text" name="input_{{ checkbox[0] }}" placeholder="Limite de desaceleração Brusca">
-</label>
-
-{% elif checkbox[1] == "Faixas RPM" %}
-    <label>
-        <input type="checkbox" name="checkbox" value="{{ checkbox[0] }}">
-        {{ checkbox[1] }} &emsp;&emsp;&emsp;&emsp;&emsp;
-        <input type="text" name="input_{{ checkbox[0] }}" placeholder="Marcha lenta">
-        <input type="text" name="input_{{ checkbox[0] }}" placeholder="Faixa verde min">
-        <input type="text" name="input_{{ checkbox[0] }}" placeholder="Faixa verde max">
-        <input type="text" name="input_{{ checkbox[0] }}" placeholder="Excesso">
-    </label>
-{% else %}
-    <label>
-        <input type="checkbox" name="checkbox" value="{{ checkbox[0] }}">
-        {{ checkbox[1] }}
-    </label>
-{% endif %}
-<br>
-{% endfor %}
-<br> -->
