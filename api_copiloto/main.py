@@ -11,6 +11,9 @@ sys.path.append('C:/Python_scripts/Gerador_Scripts/api_copiloto/')
 from validate import *
 import requests
 import base64
+import pysvn
+import Gerar_Perfil
+import subprocess
 
 
 app = Flask(__name__)
@@ -268,16 +271,6 @@ def commit_file_to_github(file_path, branch_name, hw, cliente):
     with open(file_path, 'rb') as file:
         file_content = file.read()
     url = f'https://api.github.com/repos/guilhermebrida/Gerador_Scripts/contents/Virtec/{hw[1]}/Cliente/{cliente}/{file_name}'
-    # headers = {
-    #     'Authorization': 'token {}'.format(config("BRIDA_TOKEN")) 
-    # }
-    # data = {
-    #     'message': f'Committing file {file_name}',
-    #     'content': file_content,
-    #     'branch': branch_name
-    # }
-    # requests.post('https://github.com/guilhermebrida/Gerador_Scripts/tree/main/Virtec',data=data)
-
     headers = {
         "Authorization": f'''Bearer {config("BRIDA_TOKEN")}''',
         "Content-type": "application/vnd.github+json"
@@ -286,14 +279,38 @@ def commit_file_to_github(file_path, branch_name, hw, cliente):
         "message": "My commit message",
         "content": base64.b64encode(file_content).decode("utf-8")
     }
-    print(url)
     r = requests.put(url, headers=headers, json=data)
-    print(r)
-    # response = requests.post(url, headers=headers, json=data)
-    # if response.status_code == 201:
-    #     print('Arquivo enviado com sucesso para o GitHub!')
-    # else:
-    #     print('Erro ao enviar o arquivo para o GitHub:', response.text)
+    print(r.status_code)
+    if r.status_code == 201:
+        Gerar_Perfil.GeraPerfil().main(file_path)
+        commit_file_to_svn(branch_name, hw, cliente)
+
+def commit_file_to_svn(branch_name, hw, cliente):
+    json_path = f'C:/Users/user/Downloads/{branch_name}_{hw[0]}.json'
+    with open(json_path, 'rb') as file:
+        file_content = file.read()
+    # local_path = 'svn-repo'
+    commit_message = 'Gerador de Script'
+    svn_url = 'https://svn.crearecloud.com.br/ScriptsConfigurador'
+    username = config("USER_SVN")
+    password = config("SENHA_SVN")
+    client = pysvn.Client()
+    if hasattr( client, 'lock' ):
+        client.cmd = ['svn', 'checkout', f'{svn_url}', 'svn-repo', '--username', f'{username}', '--password', f'{password}']
+        client.cmd = ['svn', 'add', f'{json_path}']
+        client.cmd = ['svn', 'commit','-m', f'{json_path}', f'{commit_message}', '--username', f'{username}', '--password', f'{password}']
+    
+    # client = pysvn.Client()
+    # client.checkout(svn_url, username=username, password=password)
+    # # client.set_default_username(username)
+    # # client.set_default_password(password)
+    # try:
+    #     # Adicionar o arquivo ao repositório
+    #     client.add(svn_path, username=username, password=password)
+    #     client.checkin([svn_path], commit_message, username=username, password=password)
+    #     print('Commit realizado com sucesso.')
+    # except Exception:
+    #     print('Erro ao realizar o commit:', Exception)
 
 
 
@@ -318,13 +335,6 @@ def commit_file_to_github(file_path, branch_name, hw, cliente):
 #         repo.update_file(contents.path, branch_name,file_content, contents.sha)
 #     else:
 #         repo.create_file(f'Virtec/{hw[1]}/Cliente/{cliente}/{file_name}', branch_name, file_content)
-
-
-
-
-def lista_clientes(hardware):
-    json_data = requests.get('https://api.github.com/repos/guilhermebrida/Gerador_Scripts/contents/Virtec/Virloc8/Cliente').json()
-    arquivos = [item['name'] for item in json_data]
 
 
 @app.route('/')
