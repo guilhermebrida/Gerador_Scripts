@@ -10,7 +10,7 @@
         <h1>Hardware</h1>
         {% for hw in hardwares %}
         <label>
-            <input type="checkbox" name="hw" value="{{ hw[0] }}" onclick="obterClientes(this)">
+            <input type="checkbox" name="hw" value="{{ hw[0] }}" onchange="obterClientes(this)">
             {{ hw[1] }}
         </label>
         {% endfor %}
@@ -78,6 +78,7 @@
         <input type="submit" value="Gerar Script">
         <script>
             function obterClientes(hardware) {
+                if (hardware.checked){
                 console.log(hardware.value);
                 var xhr = new XMLHttpRequest();
                 if (hardware.value == 1) {
@@ -85,7 +86,7 @@
                     } else if (hardware.value == 2) {
                     xhr.open('GET', 'https://api.github.com/repos/guilhermebrida/Gerador_Scripts/contents/Virtec/Vircom5/Cliente');
                     } else if (hardware.value == 3) {
-                    xhr.open('GET', 'https://api.github.com/repos/guilhermebrida/Gerador_Scripts/contents/Virtec/Vircom7/Cliente');
+                    xhr.open('GET', 'https://api.github.com/repos/guilhermebrida/Gerador_Scripts/contents/Virtec/Vircom5/Cliente');
                     } else if (hardware.value == 4) {
                     xhr.open('GET', 'https://api.github.com/repos/guilhermebrida/Gerador_Scripts/contents/Virtec/Virloc10/Cliente');
                     } else if (hardware.value == 5) {
@@ -107,7 +108,7 @@
                 };
                 xhr.send();
                 
-            }
+            }}
             var campoCliente = document.getElementById('campo-cliente');
 
             function exibirClientes(clientes) {

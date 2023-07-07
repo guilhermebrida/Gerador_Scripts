@@ -313,7 +313,7 @@ def lista_clientes(hardware):
     repo_url = config("BRIDA_REPO")
     # g = Github(access_token)
     # repo = g.get_repo(repo_url)
-    # arquivos = repo.get_contents("Virtec")
+    # arquivos = repo.get_contents("Virtec").gitkeep
     # directories = []
     json_data = requests.get('https://api.github.com/repos/guilhermebrida/Gerador_Scripts/contents/Virtec/Virloc8/Cliente').json()
     arquivos = [item['name'] for item in json_data]
