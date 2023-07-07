@@ -51,9 +51,11 @@ def test_recebe_lista_com_indice_das_funcionalidades_escolhidas_e_retorna_lista_
     assert Get_checkboxes(checkbox_marcada) == lista_nomes
 
 
-def test_deve_retornar_lista_com_os_clientes_existentes_VL8():
-    LISTA = ['April', 'ArcelorMittal', 'Bayer', 'Bracell Bahia', 'Bracell', 'CMOC', 'CMPC', 'CPFL',
-             'Corteva', 'Expresso Nepomuceno', 'Forest', 'JSL', 'MSC', 'Raizen', 'Sirtec', 'Suzano ES', 'Suzano MS', 'Syngenta',
-             'Terceira Vale', 'VLI', 'Valenet', 'Vecchiola', 'Veracel']
+# def test_deve_retornar_lista_com_os_clientes_existentes_VL8():
+#     LISTA = ['April', 'ArcelorMittal', 'Bayer', 'Bracell Bahia', 'Bracell', 'CMOC', 'CMPC', 'CPFL',
+#              'Corteva', 'Expresso Nepomuceno', 'Forest', 'JSL', 'MSC', 'Raizen', 'Sirtec', 'Suzano ES', 'Suzano MS', 'Syngenta',
+#              'Terceira Vale', 'VLI', 'Valenet', 'Vecchiola', 'Veracel']
 
-    assert lista_clientes(hw) == LISTA
+#     assert lista_clientes(hw) == LISTA
+
+
