@@ -1,0 +1,254 @@
+//[cc.id]111[cc.id]
+
+//**************************************************************
+//*															   *
+//*	         Script Configuração Base VL8	       	   		   *
+//*															   *
+//**************************************************************
+
+//*********************
+//*   Inicialização   *
+//*********************
+
+//Desliga Modo Sleep
+>VSKO000000000000<
+
+//Limpa os contadores Numericos
+//>SCT0095 0<
+
+//Limpa as Flags
+//>SCT96 0<
+
+//Configura a memória de registros e logger
+//>VSLG0000,16384,679936<
+
+//Liga perifericos
+//>VSLP_GPS1_MDM1_MF0_RF0_WF1<
+
+//Configura Motorista Padrão
+>STB000 PLN000000000000,4,12<
+
+//Velocidade no GP
+//>SGG_SCT64<
+
+//Desabilitar CAN Primaria para usar como entradas digitais
+//>VS19_ENA0,0<
+
+//Desabilita CAN Secundaria
+//>VS29_ENA0,0<
+
+//Desliga a Saidas
+>SSXP00<
+>SSXP10<
+>SSXP20<
+
+//Configura as tensões de operação
+>VSPK,2350,2200,970,930,0360,0340,0350,0340,0350,0340,0430,0425,0340,0800,0450,+50,+70,0130,0250,0020,999,A5,001<
+
+//Configura IN00 como pos chave
+//>SIT0003003_AD<
+
+//--------------------------------------------------------------------------
+
+//***************************************
+//*      Mensagens Personalizadas       *
+//*            Versão 0.6               *
+//***************************************
+
+//Mensagem de rastreamento
+>SUC00 PLN0.6,4,3 QGP,4,40 QUV01,9,44 QAD,40,8 QTB000,8,16 QGV,29,3 QCT27_1D,7,5 QCT01_1D,7,8 GVDVCT02/360,17,7<
+>SUC01 GVHVCT18,14,4 QCT19_1D,7,8 QCT92_1H,7,8 QCT78_8H,7,8 QCT79_8H,7,8<
+
+//Envio de dados numéricos
+>SUC02 QUV00,9,200 QTB020,8,40<
+
+//03 - Reservada
+>SUC03U<
+
+//Fim de Operação
+//                 H_MOV    T_MOT_GIR    T_MOV        T_MAR_LEN    T_FX_VD      T_IN01       T_IN02
+>SUC04 QUV00,9,200 QIM,4,12 QCT39_1D,7,5 QCT40_1D,7,5 QCT41_1D,7,5 QCT42_1D,7,5 QCT43_1D,7,5 QCT44_1D,7,5<
+
+
+//05 - Reservada
+>SUC05U<
+
+//06 - Reservada
+>SUC06U<
+
+//07 - Reservada
+>SUC07U<
+
+//08 - Reservada
+>SUC08U<
+
+//09 - Reservada
+>SUC09U<
+
+//10 - Envio de Configuração - CTs
+>SUC10 QCT96,7,10 QCT16,7,10 QCT04,7,10 QCT05,7,10 QCT06,7,10 QCT07,7,10 QCT08,7,10 QCT09,7,10 QCT11,7,10 QCT12,7,10 QCT13,7,10<
+
+//11 - Envio de Configuração - Faixas de RPM e Entradas digitais
+>SUC11 QPP,24,4 QUT11,19,10 QUT12,19,11 QUT13,19,11 QUT14,19,11 QUT15,19,11 QUT16,19,8 QIT00,4,13 QIT01,4,13<
+
+//12 - Envio de Configuração - FW, Versionamento HW, serial HW, BaudrateCAN, Mode CAN, IMEI, Num. SIMCARD, Versão Scripts
+>SUC12 QVR,30,10 QVR,24,5 QSN,4,8 VQ29_ENA,6,9 QEN11,7,15 QEN12,7,20 QTP00,7,20 QTP01,7,20 QTP02,7,20 QTP03,7,20<
+
+//13 - Informações enviadas para o Tablet
+>SUC13 QGP,4,40 QIN,20,8 QCT88,7,10 QCT96,7,10 QCT64,7,6 QCT27,8,4 QCT01,7,8 QCT02,7,10 QTB000,8,12 QCT19_1D,7,8 QTP14,7,1 QG2,20,23<
+
+//14 - Reservada
+>SUC14U<
+
+//15 - Reservada
+>SUC15U<
+
+//--------------------------------------------------------------------------
+
+//****************************************
+//*    		Grupos de Alarmes			 *
+//****************************************
+
+//Limpa a variavel de alarmes
+>SCT88 0<
+
+//Memoria Reservada para arquivos MP3
+//MP3 = 200K * 16 = 3 MBytes
+>VSRM12,0,8192,208383<
+
+//Configurar RM12 para áudio
+//onde: 9 volume do áudio, RM12 definido para áudio
+>TCFG04,912<
+
+//Alarmes - CT88 entre 1 e 2147483647
+>SUT49,QCT88,7,10,1,2147483647<
+>SED209 TT00++ UC49++ SGN NN {SCT88 |VCT16&2147483648}{SCT92 VCT88}<
+>SED210 TT00++ UC49++&&CL37++ SGN NN {STB100 QCT88_8H,7,8}{PFL,%QTB100,8,8,1,8}{SCT88 0}{SCC37 6}<
+
+//--------------------------------------------------------------------------
+
+//****************************************
+//*           Ignição 		             *
+//*	  	Início de Operação				 *
+//****************************************
+
+//Configuração do Debounce da ignição (3 segundos tolerância ao ligar e 3segundos ao desligar)
+>SIT07040005_INV0<
+
+//Evento Inicio de Operação
+>SED21 TT00++ IN07++&&SG00-- GF0 V0 {SCT3944 0}{CIM}{CDM}{SCT88 VCT16&256}{SCT18 +1}{SSH001}{SSO}<
+
+//Veículo foi desligado
+>SED25 IN07-- SG00++ GF0 V4 {SCT64 0}{SCT27 0}{SSH000}{SSO}<
+
+//Garante que o valor enviado de velocidade e RPM quando a ignição estiver desligada seja zero.
+>SED29 TT00++ IN07-- SGN NN {SCT64 0}{SCT27 0}{SCT7576 0}<
+
+//--------------------------------------------------------------------------
+
+//***************
+//*  Horímetro  *
+//***************
+
+//Motor Girando
+>SUT10,QCT27,7,5,400,9999<
+
+//Incremento de Horimetro
+>SED119 TT00++ UC10++ SGN NN {SCT02 +1}<
+
+//Incremento de tempo de motor girando
+>SED129 TT00++ UC10++ SGN NN {SCT39 +1}<
+
+//Horímetro (em segundos)
+>SCT02 0<
+
+//----------------------------------------------------------------------------
+
+//***************************
+//*  	 Tempo Mvto         *
+//***************************
+
+//Tempo de Movimento
+>SGS00003255<
+>SED130 TT00++ GS00++ SGN NN {SCT40 +1}<
+
+//--------------------------------------------------------------------------
+
+//**********************************
+//*  Rotação de Troca de Marcha    *
+//**********************************
+
+//Configura a troca de Marcha
+>SUT16,QCT27,7,15,0000,9999<
+
+//Evento de Troca de Marcha
+>SED134 UC16-- IN07++ SGN NN {SCT88 VCT16&16}<
+
+//--------------------------------------------------------------------------
+
+
+//****************************************
+//*  Cálculo da variação de velocidade   *
+//****************************************
+
+>SED206 TT00++ IN07++ SGN NN {SCT76 VCT64-VCT75/1000}{SCT75 VCT64}<
+
+//----------------------------------------------------------------------------
+
+//***************************
+//*  Envio da configuração	*
+//***************************
+
+//Envia to dia às 01hs ou 02hs horário de verão
+>STR15 040000<
+
+>SED180 TR15++ +- SGN NN {SCC58 5}<
+>SED181 CL58++ +- GF0 AX {QUV00,9,3 QUV10,9,120 QCT14,7,10 QCT15,7,10 QCT17,7,10}<
+>SED182 CL58++ +- GF0 AX {QUV00,9,3 QUV11,9,200 QIT02,4,13 QIT03,4,13 QIT07,4,13}<
+>SED183 CL58++ +- GF0 AX {QUV00,9,3 QUV12,9,180}<
+
+//--------------------------------------------------------------------------
+
+//***********
+//* Logger	*
+//***********
+
+>SED93 TT00++ IN07++||UC15++ SGN NN {SCC15 120}<
+
+//Em caso de falha de RAM, posiona o ponteiro de logger na última posição
+>SED94 RT63++ +- SGN NN {QDLS311229235959}<
+
+//Armazena Versao,Vel, RPM
+>SED95 TT00++ CL15-- LOG AX {PLN03,4,2 QCT64_6D,7,3 QCT27_6D,9,3}<
+
+//Armazena Discreta Virtual 1
+>SED96 TT00++ CL15-- LOG AX {QCT78_8H,7,8}<
+
+//Armazena Discreta Virtual 2
+>SED97 TT00++ CL15-- LOG AX {QCT79_8H,7,8}<
+
+//Armazena GP
+>SED98 TT00++ CL15-- LOG GP<
+
+//Armazena Hodometro
+>SED99 TT00++ CL15-- LOG AX {QCT01,7,10}<
+
+//--------------------------------------------------------------------------
+
+
+
+
+//*******************
+//*  Versionamento  *
+//*******************
+
+>STP01 teste.230707<
+
+//--------------------------------------------------------------------------
+
+//Precisa enviar os alarmes ativos no fim para garantir que não serão
+//alterados.
+>SCT16 768<
+
+//Salva parametros
+>SSO<
