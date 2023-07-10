@@ -1,4 +1,4 @@
-from flask import Flask,jsonify,request,json,redirect,render_template, send_file
+from flask import Flask,jsonify,request,json,redirect,render_template, send_file,send_from_directory
 from jinja2 import Template
 import re
 from datetime import date
@@ -214,7 +214,7 @@ def Gerar_arquivo(hw,funcoes,parametros,ALARMES,cliente):
     tudo = Gerar_alarmes(tudo,ALARMES)
     with open(f'C:/Users/user/Downloads/{path}_{hw[0]}.txt', 'w') as fim:
         fim.write(tudo)
-    commit_file_to_github(f'C:/Users/user/Downloads/{path}_{hw[0]}.txt', path, hw, cliente)
+    return commit_file_to_github(f'C:/Users/user/Downloads/{path}_{hw[0]}.txt', path, hw, cliente)
 
 def Gera_tag(tudo,tag):
     return f'//[cc.id]{tag}[cc.id]\n\n' + tudo
@@ -270,71 +270,19 @@ def commit_file_to_github(file_path, branch_name, hw, cliente):
     file_name = f'{branch_name}_{hw[0]}.txt'
     with open(file_path, 'rb') as file:
         file_content = file.read()
-    url = f'https://api.github.com/repos/guilhermebrida/Gerador_Scripts/contents/Virtec/{hw[1]}/Cliente/{cliente}/{file_name}'
+    # url = f'https://api.github.com/repos/guilhermebrida/Gerador_Scripts/contents/Virtec/{hw[1]}/Cliente/{cliente}/{file_name}'
+    url = f'https://api.github.com/repos/CreareSistemas/virloc8-teste-de-esteira/contents/Virtec/{hw[1]}/Cliente/{cliente}/{file_name}'
     headers = {
         "Authorization": f'''Bearer {config("BRIDA_TOKEN")}''',
         "Content-type": "application/vnd.github+json"
     }
     data = {
-        "message": "My commit message",
+        "message": f"Gerador de script: {branch_name}",
         "content": base64.b64encode(file_content).decode("utf-8")
     }
     r = requests.put(url, headers=headers, json=data)
     print(r.status_code)
-    if r.status_code == 201:
-        Gerar_Perfil.GeraPerfil().main(file_path)
-        commit_file_to_svn(branch_name, hw, cliente)
-
-def commit_file_to_svn(branch_name, hw, cliente):
-    json_path = f'C:/Users/user/Downloads/{branch_name}_{hw[0]}.json'
-    with open(json_path, 'rb') as file:
-        file_content = file.read()
-    # local_path = 'svn-repo'
-    commit_message = 'Gerador de Script'
-    svn_url = 'https://svn.crearecloud.com.br/ScriptsConfigurador'
-    username = config("USER_SVN")
-    password = config("SENHA_SVN")
-    client = pysvn.Client()
-    if hasattr( client, 'lock' ):
-        client.cmd = ['svn', 'checkout', f'{svn_url}', 'svn-repo', '--username', f'{username}', '--password', f'{password}']
-        client.cmd = ['svn', 'add', f'{json_path}']
-        client.cmd = ['svn', 'commit','-m', f'{json_path}', f'{commit_message}', '--username', f'{username}', '--password', f'{password}']
-    
-    # client = pysvn.Client()
-    # client.checkout(svn_url, username=username, password=password)
-    # # client.set_default_username(username)
-    # # client.set_default_password(password)
-    # try:
-    #     # Adicionar o arquivo ao repositório
-    #     client.add(svn_path, username=username, password=password)
-    #     client.checkin([svn_path], commit_message, username=username, password=password)
-    #     print('Commit realizado com sucesso.')
-    # except Exception:
-    #     print('Erro ao realizar o commit:', Exception)
-
-
-
-# def commit_file_to_github(file_path, branch_name, hw,cliente):
-#     file_name = f'{branch_name}_{hw[0]}.txt'
-#     access_token = config("BRIDA_TOKEN")
-#     repo_url = config("BRIDA_REPO")
-#     g = Github(access_token)
-#     repo = g.get_repo(repo_url)
-#     arquivos = repo.get_contents("Virtec")
-#     ARQUIVOS = []
-#     while arquivos:
-#          file_content = arquivos.pop(0)
-#          if file_content.type == "dir":
-#             arquivos.extend(repo.get_contents(file_content.path))
-#          else:
-#             ARQUIVOS.append(file_content.path)
-#     with open(file_path, 'rb') as file:
-#         file_content = file.read()
-#     if file_name in [os.path.basename(arquivo) for arquivo in ARQUIVOS]:
-#         contents = repo.get_contents(f'Virtec/{hw[1]}/Cliente/{cliente}/{file_name}')
-#         repo.update_file(contents.path, branch_name,file_content, contents.sha)
-#     else:
-#         repo.create_file(f'Virtec/{hw[1]}/Cliente/{cliente}/{file_name}', branch_name, file_content)
+    return r.status_code
 
 
 @app.route('/')
@@ -380,10 +328,15 @@ def submit():
         return render_template('popup.html', validate=validate)
     if validate_cc:
         return render_template('popup.html', validate_cc=validate_cc)
-    Gerar_arquivo(hw,funcoes,values,ALARMES,cliente)
+    status_code = Gerar_arquivo(hw,funcoes,values,ALARMES,cliente)
     return ('Hardware: ' + hw_escolhido + '<br>' + 'Cliente: ' + cliente + '<br>' 'Funções desejadas:' + str(funcoes) + '<br>' 
-            + 'Valores capturados: ' + str(values) + '<br>' + 'alarmes: ' + str(ALARMES))
+            + 'Valores capturados: ' + str(values) + '<br>' + 'alarmes: ' + str(ALARMES) + '<br>' + 'Status code: ' + str(status_code))
 
+
+
+@app.route('/js/<path:filename>')
+def serve_js(filename):
+    return send_from_directory('js', filename)
 
 
 if __name__ == '__main__':
