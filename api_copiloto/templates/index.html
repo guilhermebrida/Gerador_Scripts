@@ -49,10 +49,10 @@
         {% for var in checkboxes_var %}
         <label>
             {% if var[0] == 1 %}
-            <input type="text" maxlength="15" name="input_{{ var[0] }}" placeholder="Insira um valor">
+            <input type="text" maxlength="20" name="input_{{ var[0] }}" placeholder="Insira um valor">
             {{ var[1] }}
             {% elif var[0] == 2 %}
-            <input type="text" maxlength="15" name="input_{{ var[0] }}" placeholder="Insira um valor">
+            <input type="text" maxlength="20" name="input_{{ var[0] }}" placeholder="Insira um valor">
             {{ var[1] }}
             {% elif var[0] == 20 %}
             <input type="text" maxlength="10" name="input_{{ var[0] }}" placeholder="Ex BRACELL">
@@ -77,7 +77,7 @@
         <input type="submit" value="Gerar Script">
     </form>
     <script src="/js/env.js"></script>
-    <script src="/js/script.js"></script>
+    <script src="/js/script.js"></script> 
 </body>
 </html>
 

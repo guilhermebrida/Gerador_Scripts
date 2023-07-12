@@ -10,15 +10,10 @@ packages = [{include = "api_copiloto"}]
 python = "^3.9"
 flask = "^2.3.2"
 pytest = "^7.4.0"
-gitpython = "^3.1.31"
 python-dotenv = "^1.0.0"
 python-decouple = "^3.8"
 requests = "^2.31.0"
-pygithub = "^1.59.0"
 flask-testing = "^0.8.1"
-pysvn = "^0.1.0"
-pycryptodome = "^3.18.0"
-aes-pkcs5 = "^1.0.1"
 
 
 [tool.poetry.group.dev.dependencies]

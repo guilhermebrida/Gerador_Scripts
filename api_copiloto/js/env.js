@@ -1,3 +1,3 @@
 
 window.BRIDA_USER = 'guilhermebrida';
-window.BRIDA_TOKEN = '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';
+window.BRIDA_TOKEN = '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';
