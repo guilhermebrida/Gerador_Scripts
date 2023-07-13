@@ -1,82 +1,76 @@
-import json
-import requests
-from datetime import datetime
 from decouple import config
+import requests
+import base64
 
-def gh_sesh(user, token):
-    s = requests.Session()
-    s.auth = (user, token)
-    s.headers ={ 
+def create_branch(new_branch):
+    url = f'https://api.github.com/repos/CreareSistemas/virloc8-teste-de-esteira/git/refs'
+    headers = {
+        'Authorization': f'Bearer {config("BRIDA_TOKEN")}',
+        'Content-Type': 'application/vnd.github+json'
+    }
+    data = {
+        'ref': f'refs/heads/{new_branch}',
+        'sha': get_commit_sha()[0]
+    }
+    response = requests.post(url, headers=headers, json=data)
+    print(response.status_code)
+    if response.status_code == 201:
+        print(f'Branch "{new_branch}" criada com sucesso!')
+    else:
+        print('Erro ao criar a branch:', response.text)
+
+def commit_file_to_github(file_path, branch_name, hw, cliente):
+    create_branch(branch_name)
+    file_name = f'{branch_name}_{hw[0]}.txt'
+    with open(file_path, 'rb') as file:
+        file_content = file.read()
+    url = f'https://api.github.com/repos/CreareSistemas/virloc8-teste-de-esteira/contents/Virtec/{hw[1]}/Cliente/{cliente}/{file_name}'
+    print(config("BRIDA_TOKEN"))
+    headers = {
+        "Authorization": f'Bearer {config("BRIDA_TOKEN")}',
         "Content-type": "application/vnd.github+json"
     }
-    return s
+    data = {
+        "message": f"Gerador de script: {branch_name}",
+        "content": base64.b64encode(file_content).decode("utf-8"),
+        "branch": f'{branch_name}'
+    }
+    r = requests.put(url, headers=headers, json=data)
+    print(r.status_code)
+    return r.status_code
 
-class GH_Response_Obj:
-    def __init__(self, json_all, next_page):
-        self.json_all = json_all
-        self.next_page = next_page
 
-def gh_get_request(gh_user, gh_token, url):
-    s = gh_sesh(gh_user, gh_token)
-    response = s.get(url)
-    response_status = response.status_code
-    if response_status > 200:
-        print(f'\n This was the response code: {response_status}')
-        exit()
+def get_commit_sha():
+    url = f'https://api.github.com/repos/CreareSistemas/virloc8-teste-de-esteira/branches/main'
+    headers = {
+        'Authorization': f'Bearer {config("BRIDA_TOKEN")}'
+    }
+    response = requests.get(url, headers=headers)
+    print(response.status_code)
+    if response.status_code == 200:
+        commit_sha = response.json()['commit']['sha']
+        return commit_sha,response.status_code
+    else:
+        print('Erro ao obter o SHA do commit:', response.text)
+    return None
 
-    json = response.json()
-    links = response.links
+def create_pull_request(branch_name):
+    url = f'https://api.github.com/repos/CreareSistemas/virloc8-teste-de-esteira/pulls'
+    headers = {
+        'Accept': 'application/vnd.github.v3+json',
+        'Authorization': f'Bearer {config("BRIDA_TOKEN")}'
+    }
+    data = {
+        'title': branch_name,
+        'body': 'Pull request automático',
+        'head': branch_name,
+        'base': 'main'
+    }
+    response = requests.post(url, headers=headers, json=data)
+    if response.status_code == 201:
+        pull_request = response.json()
+        print('Pull request criado com sucesso!')
+        print('URL do pull request:', pull_request['html_url'])
+    else:
+        print('Erro ao criar o pull request:', response.text)
 
-    try:
-        next_page = links['next']['url']
-    except:
-        next_page = None
-
-    full = GH_Response_Obj(json, next_page)
-
-    return full
-
-def gh_post_request(gh_user, gh_token, url, data):
-    s = gh_sesh(gh_user, gh_token)
-    response = s.post(url, data)
-    response_status = response.status_code
-    if response_status > 201:
-        print(f'\n This was the response code: {response_status}')
-        exit()
-
-    json = response.json()
-
-    return json 
-
-def get_branch_sha(gh_user, gh_token, branch_name="teste"):
-	url = f'https://api.github.com/repos/CreareSistemas/virloc8-teste-de-esteira/branches/{branch_name}'
-	response =gh_get_request(gh_user, gh_token, url)
-	sha = response.json_all['commit']['sha']
-	return sha
-
-def create_new_branch(gh_user, gh_token, master_branch_sha):
-	now = str(datetime.now()).replace(' ', '__').replace(':', '-').replace('.', '')
-	new_sync_branch = f'new_branch_{now}'
-	url = f"https://api.github.com/repos/CreareSistemas/virloc8-teste-de-esteira/git/refs"
-
-	data = {
-		"ref": f'refs/heads/{new_sync_branch}',
-		"sha": master_branch_sha
-	}
-
-	data = json.dumps(data)
-
-	response =gh_post_request(gh_user, gh_token, url, data)
-
-	return response
-
-def main():
-    gh_user = config("BRIDA_USER")
-    gh_token = config("BRIDA_TOKEN")
-    sha = get_branch_sha(gh_user, gh_token)
-    print(sha)
-    new_sync_branch = create_new_branch(gh_user, gh_token, sha)
-    print(new_sync_branch)
-
-if __name__ == '__main__':
-	main()

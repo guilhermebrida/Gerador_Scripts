@@ -12,6 +12,7 @@ import base64
 import json
 from requests.auth import HTTPBasicAuth
 from pprint import pprint
+from api_copiloto.git_api import *
 
 
 app = Flask(__name__)
@@ -210,7 +211,8 @@ def Gerar_arquivo(hw,funcoes,parametros,ALARMES,cliente):
     tudo = Gerar_alarmes(tudo,ALARMES)
     with open(f'C:/Users/user/Downloads/{path}_{hw[0]}.txt', 'w') as fim:
         fim.write(tudo)
-    res = commit_file_to_github(f'C:/Users/user/Downloads/{path}_{hw[0]}.txt', path, hw, cliente)
+    commit_file_to_github(f'C:/Users/user/Downloads/{path}_{hw[0]}.txt', path, hw, cliente)
+    res = create_pull_request(path)
     return res
 
 def Gera_tag(tudo,tag):
@@ -262,63 +264,6 @@ def Get_alarms(alarme_escolhido):
         parameter_name = chaves[int(alarm)-1]
         ALARMES.append(parameter_name)
     return ALARMES
-
-def create_branch(new_branch):
-    url = f'https://api.github.com/repos/CreareSistemas/virloc8-teste-de-esteira/git/refs'
-    headers = {
-        'Authorization': f'Bearer {config("BRIDA_TOKEN")}',
-        'Content-Type': 'application/vnd.github+json'
-    }
-    data = {
-        'ref': f'refs/heads/{new_branch}',
-        'sha': get_commit_sha()[0]
-    }
-    response = requests.post(url, headers=headers, json=data)
-    print(response.status_code)
-    if response.status_code == 201:
-        print(f'Branch "{new_branch}" criada com sucesso!')
-    else:
-        print('Erro ao criar a branch:', response.text)
-
-def commit_file_to_github(file_path, branch_name, hw, cliente):
-    create_branch(branch_name)
-    file_name = f'{branch_name}_{hw[0]}.txt'
-    with open(file_path, 'rb') as file:
-        file_content = file.read()
-    # url = f'https://api.github.com/repos/guilhermebrida/Gerador_Scripts/contents/Virtec/{hw[1]}/Cliente/{cliente}/{file_name}'
-    url = f'https://api.github.com/repos/CreareSistemas/virloc8-teste-de-esteira/contents/Virtec/{hw[1]}/Cliente/{cliente}/{file_name}'
-    headers = {
-        "Authorization": f'Bearer {config("BRIDA_TOKEN")}',
-        "Content-type": "application/vnd.github+json"
-    }
-    data = {
-        "message": f"Gerador de script: {branch_name}",
-        "content": base64.b64encode(file_content).decode("utf-8"),
-        "branch": f'{branch_name}'
-    }
-    # r = requests.put(url, auth=HTTPBasicAuth(config("BRIDA_USER"),config("BRIDA_TOKEN")), json=data)
-    r = requests.put(url, headers=headers, json=data)
-    print(r.status_code)
-    return r.status_code
-
-
-def get_commit_sha():
-    # url = f'https://api.github.com/repos/CreareSistemas/virloc8-teste-de-esteira/git/refs/heads/{branch}'
-    url = f'https://api.github.com/repos/CreareSistemas/virloc8-teste-de-esteira/branches/main'
-    headers = {
-        'Authorization': f'Bearer {config("BRIDA_TOKEN")}'
-    }
-    response = requests.get(url, headers=headers)
-    print(response.status_code)
-    if response.status_code == 200:
-        commit_sha = response.json()['commit']['sha']
-        return commit_sha,response.status_code
-    else:
-        print('Erro ao obter o SHA do commit:', response.text)
-    return None
-
-
-
 
 @app.route('/')
 def index():
