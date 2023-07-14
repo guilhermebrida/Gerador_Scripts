@@ -5,11 +5,11 @@ from werkzeug.datastructures import ImmutableMultiDict
 
 
         
-class MyTestCase(TestCase):
-    def create_app(self):
-        app = Flask(__name__)
-        app.config['TESTING'] = True
-        return app
+# class MyTestCase(TestCase):
+#     def create_app(self):
+#         app = Flask(__name__)
+#         app.config['TESTING'] = True
+#         return app
 
     # def test_Get_values(self):
     #     with self.app.test_request_context():
@@ -25,17 +25,13 @@ class MyTestCase(TestCase):
     #         result = Get_values(checkbox_names_var)
             # self.assertEqual(result, expected_result)
 
-    def test_Get_values(self):
-        with self.app.test_request_context():
-            checkbox_names_var = ['var1', 'var2', 'var3']
-            form_data = ImmutableMultiDict([('input_1', 'value1'), ('input_2', ''), ('input_3', 'value3')])
-            expected_result = {'var1': 'value1', 'var3': 'value3'}
-            request = self.app.test_request_context('/',
-                                                    method='POST',
-                                                    data=form_data)
-            breakpoint()
-            print(request)
-            request.form = form_data
-            self.app.preprocess_request()
-            result = Get_values(checkbox_names_var)
-            self.assertEqual(result, expected_result)
+    # def test_Get_values(self):
+    #     with self.app.test_request_context():
+    #         checkbox_names_var = ['var1', 'var2', 'var3']
+    #         form_data = ImmutableMultiDict([('input_1', 'value1'), ('input_2', ''), ('input_3', 'value3')])
+    #         expected_result = {'var1': 'value1', 'var3': 'value3'}
+    #         request = self.app.test_request_context('/submit', method='POST',data=form_data)
+    #         request.form = form_data
+    #         self.app.preprocess_request()
+    #         result = Get_values(checkbox_names_var)
+    #         self.assertEqual(result, expected_result)

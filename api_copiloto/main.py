@@ -12,7 +12,7 @@ import base64
 import json
 from requests.auth import HTTPBasicAuth
 from pprint import pprint
-from api_copiloto.git_api import *
+from git_api import *
 
 
 app = Flask(__name__)
@@ -274,8 +274,6 @@ def index():
     return render_template('index.html', checkboxes=checkboxes, checkboxes_var=checkboxes_var, alarmes=checkbox_alarmes, hardwares=checkboxes_hw)
 
 
-
-
 @app.route('/submit', methods=['POST'])
 def submit():
     cliente = request.form.get('cliente')
@@ -308,10 +306,10 @@ def submit():
         return render_template('popup.html', validate=validate)
     if validate_cc:
         return render_template('popup.html', validate_cc=validate_cc)
+    print(hw,funcoes,values,ALARMES,cliente)
     status_code = Gerar_arquivo(hw,funcoes,values,ALARMES,cliente)
     return ('Hardware: ' + hw_escolhido + '<br>' + 'Cliente: ' + cliente + '<br>' 'Funções desejadas:' + str(funcoes) + '<br>' 
             + 'Valores capturados: ' + str(values) + '<br>' + 'alarmes: ' + str(ALARMES) + '<br>' + 'Status code: ' + str(status_code))
-
 
 
 @app.route('/js/<path:filename>')
@@ -320,4 +318,4 @@ def serve_js(filename):
 
 
 if __name__ == '__main__':
-  app.run(debug=True)
+  app.run(host="0.0.0.0",debug=True)

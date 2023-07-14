@@ -13,6 +13,7 @@ def create_branch(new_branch):
         'sha': get_commit_sha()[0]
     }
     response = requests.post(url, headers=headers, json=data)
+    # print(response.content)
     print(response.status_code)
     if response.status_code == 201:
         print(f'Branch "{new_branch}" criada com sucesso!')

@@ -2,6 +2,7 @@
 function obterClientes(hardware) {
     if (hardware.checked) {
         console.log(hardware.value);
+        console.log(window.BRIDA_TOKEN);
         var xhr = new XMLHttpRequest();
         // window.BRIDA_TOKEN
         // if (hardware.value == 1) {
@@ -14,17 +15,6 @@ function obterClientes(hardware) {
         //     xhr.open('GET', 'https://api.github.com/repos/guilhermebrida/Gerador_Scripts/contents/Virtec/Virloc10/Cliente');
         //     } else if (hardware.value == 5) {
         //     xhr.open('GET', 'https://api.github.com/repos/guilhermebrida/Gerador_Scripts/contents/Virtec/Virloc12/Cliente');
-        //     }
-        // if (hardware.value == 1) {
-        //     xhr.open('GET', 'https://api.github.com/repos/CreareSistemas/virloc8-teste-de-esteira/contents/Virtec/Virloc8/Cliente');
-        //     } else if (hardware.value == 2) {
-        //     xhr.open('GET', 'https://api.github.com/repos/CreareSistemas/virloc8-teste-de-esteira/contents/Virtec/Vircom5/Cliente');
-        //     } else if (hardware.value == 3) {
-        //     xhr.open('GET', 'https://api.github.com/repos/CreareSistemas/virloc8-teste-de-esteira/contents/Virtec/Vircom5/Cliente');
-        //     } else if (hardware.value == 4) {
-        //     xhr.open('GET', 'https://api.github.com/repos/CreareSistemas/virloc8-teste-de-esteira/contents/Virtec/Virloc10/Cliente');
-        //     } else if (hardware.value == 5) {
-        //     xhr.open('GET', 'https://api.github.com/repos/CreareSistemas/virloc8-teste-de-esteira/contents/Virtec/Virloc12/Cliente');
         //     }
         if (hardware.value == 1) {
             url = 'https://api.github.com/repos/CreareSistemas/virloc8-teste-de-esteira/contents/Virtec/Virloc8/Cliente';

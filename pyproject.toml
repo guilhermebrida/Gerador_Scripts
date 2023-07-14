@@ -14,11 +14,13 @@ python-dotenv = "^1.0.0"
 python-decouple = "^3.8"
 requests = "^2.31.0"
 flask-testing = "^0.8.1"
+requests-mock = "^1.11.0"
 
 
 [tool.poetry.group.dev.dependencies]
 autopep8 = "^2.0.2"
-black = {version = "^23.3.0", allow-prereleases = true}
+black = {version = "^22.1.0", allow-prereleases = true}
+pytest-cov = "^4.1.0"
 
 [build-system]
 requires = ["poetry-core"]
