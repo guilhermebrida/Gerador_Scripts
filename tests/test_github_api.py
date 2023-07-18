@@ -9,6 +9,8 @@ import pytest
 
 
 def test_get_sha_igual_200():
+    print(config("BRIDA_USER"))
+    print(config("BRIDA_TOKEN"))
     sha = get_commit_sha()
     assert sha[1] == 200
 

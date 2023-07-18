@@ -33,4 +33,4 @@ jobs:
       - name: Test
         run : |
           export $(cat .env | xargs) 
-          poetry run pytest --cov
+          poetry run pytest -s
