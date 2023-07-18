@@ -26,8 +26,8 @@ jobs:
 
       - name: Criar arquivo .env
         run: |
-        echo "BRIDA_USER={{ secrets.BRIDA_USER }}" >> .env
-        echo "BRIDA_TOKEN={{ secrets.BRIDA_TOKEN }}" >> .env
+        echo "BRIDA_USER=${{ secrets.BRIDA_USER }}" >> .env
+        echo "BRIDA_TOKEN=${{ secrets.GITHUB_TOKEN }}" >> .env
 
       - name: Test
         run : poetry run pytest --cov
