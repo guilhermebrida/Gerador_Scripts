@@ -18,6 +18,8 @@ from git_api import *
 app = Flask(__name__)
 app.static_folder = './static/css'
 
+user = os.getenv('USER')
+
 checkbox_hardwares = ['S8','S4','S4+','S3','S3+']
 
 def get_checkbox_names(vl_version):
@@ -211,10 +213,10 @@ def Gerar_arquivo(hw,funcoes,parametros,ALARMES,cliente):
         tudo = re.sub(">SSO<",">SXT0010010101_MD1<\n>SSO<",tudo)
     tudo = Gerar_alarmes(tudo,ALARMES)
     # with open(f'C:/Users/user/Downloads/{path}_{hw[0]}.txt', 'w') as fim:
-    with open(f'/home/$USER/Downloads/{path}_{hw[0]}.txt', 'w') as fim:
+    with open(f'/home/{user}/Downloads/{path}_{hw[0]}.txt', 'w') as fim:
         fim.write(tudo)
     # commit_file_to_github(f'C:/Users/user/Downloads/{path}_{hw[0]}.txt', path, hw, cliente)
-    commit_file_to_github(f'/home/$USER/Downloads/{path}_{hw[0]}.txt', path, hw, cliente)
+    commit_file_to_github(f'/home/{user}/Downloads/{path}_{hw[0]}.txt', path, hw, cliente)
     res = create_pull_request(path)
     return res
 
