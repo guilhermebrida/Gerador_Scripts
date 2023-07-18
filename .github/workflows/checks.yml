@@ -27,7 +27,7 @@ jobs:
       - name: Criar arquivo .env
         run: |
           echo "BRIDA_USER=${{ secrets.BRIDA_USER }}" >> .env
-          echo "BRIDA_TOKEN=${{ secrets.GITHUB_TOKEN }}" >> .env
+          echo "BRIDA_TOKEN=${{ secrets.BRIDA_TOKEN }}" >> .env
           cat .env
           echo "${{ secrets.BRIDA_USER }}"
           echo "${{ secrets.BRIDA_TOKEN }}"
