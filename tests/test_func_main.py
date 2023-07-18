@@ -146,9 +146,9 @@ def test_deve_retornar_os_limites_de_dirigibilidade(monkeypatch):
         assert result == assert_values
 
 
-
-
-def test_deve_retornar_ur_arquivo_com_os_parametros(monkeypatch):
+@mock.patch('api_copiloto.main.create_pull_request')
+@mock.patch('api_copiloto.main.commit_file_to_github')
+def test_deve_retornar_ur_arquivo_com_os_parametros(mock_commit,mock_pull,monkeypatch):
     funcoes = [
         "Tracking",
         "Faixas RPM",
@@ -190,33 +190,9 @@ def test_deve_retornar_ur_arquivo_com_os_parametros(monkeypatch):
         "Nome da rede Lora": "TESTE",
     }
     ALARMES = ['Pedido Motorista', 'Pedido de Apontamento', 'Excesso RPM', 'Velocidade', 'Discretas', 'Aceleração Brusca', 'Freada Brusca', 'Motorista Identificado', 'Ignição On', 'Parada com Motor Ligado']
-    class MockResponse:
-        def __init__(self, status_code, json=None, text=''):
-            self.status_code = status_code
-            self.json_value = json
-            self.text = text
-
-    def mock_commit_file_to_github(file_path, branch_name, hw, cliente):
-        content = file_path.encode()
-        return 201
-
-
+    mock_commit.return_value = 201
+    mock_pull.return_value = [201,'Pull Request OK']
     with patch('builtins.open', mock_open(read_data='arquivo de teste')) as mock_open_file:
-        # Mock para a função commit_file_to_github
-        with patch('main.commit_file_to_github', side_effect=mock_commit_file_to_github) as mock_commit:
-            # Chamar a função Gerar_arquivo dentro do contexto dos mocks
-            resultado = Gerar_arquivo('S8', funcoes, parametros, ALARMES, 'teste')
-            
-            # Verificar o resultado esperado
-            assert resultado == 201
-            
-            # Verificar as chamadas dos mocks
-            mock_open_file.assert_called_once_with('arquivo.txt', 'r')
-            mock_commit.assert_called_once_with('arquivo.txt', 'teste', 'Virloc8', 'teste')
-
-
-# ['VL8', 'Virloc8'] 
-# ['Tracking', 'Faixas RPM', 'Excesso de Velocidade', 'Desaceleração brusca', 'Lora'] 
-# {'Nome do Arquivo': 'teste', 'Id Arquivo configurador': 'teste', 'Customer Child ID': '12'} 
-# [] 
-# 'Teste'
+        resultado = Gerar_arquivo('S8', funcoes, parametros, ALARMES, 'teste')
+        assert resultado[0] == 201
+        assert resultado[1] == 'Pull Request OK'

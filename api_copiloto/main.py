@@ -306,11 +306,10 @@ def submit():
         return render_template('popup.html', validate=validate)
     if validate_cc:
         return render_template('popup.html', validate_cc=validate_cc)
-    print(hw,funcoes,values,ALARMES,cliente)
-    status_code = Gerar_arquivo(hw,funcoes,values,ALARMES,cliente)
-    return ('Hardware: ' + hw_escolhido + '<br>' + 'Cliente: ' + cliente + '<br>' 'Funções desejadas:' + str(funcoes) + '<br>' 
-            + 'Valores capturados: ' + str(values) + '<br>' + 'alarmes: ' + str(ALARMES) + '<br>' + 'Status code: ' + str(status_code))
-
+    res = Gerar_arquivo(hw,funcoes,values,ALARMES,cliente)
+    return render_template('submit.html', hardware=hw_escolhido,cliente=cliente,funcoes=funcoes,values=values,
+                            alarmes=ALARMES,status_code=res[0],pull_request=res[1])
+ 
 
 @app.route('/js/<path:filename>')
 def serve_js(filename):

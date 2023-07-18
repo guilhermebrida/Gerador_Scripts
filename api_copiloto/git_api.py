@@ -26,7 +26,6 @@ def commit_file_to_github(file_path, branch_name, hw, cliente):
     with open(file_path, 'rb') as file:
         file_content = file.read()
     url = f'https://api.github.com/repos/CreareSistemas/virloc8-teste-de-esteira/contents/Virtec/{hw[1]}/Cliente/{cliente}/{file_name}'
-    print(config("BRIDA_TOKEN"))
     headers = {
         "Authorization": f'Bearer {config("BRIDA_TOKEN")}',
         "Content-type": "application/vnd.github+json"
@@ -37,7 +36,6 @@ def commit_file_to_github(file_path, branch_name, hw, cliente):
         "branch": f'{branch_name}'
     }
     r = requests.put(url, headers=headers, json=data)
-    print(r.status_code)
     return r.status_code
 
 
@@ -47,7 +45,6 @@ def get_commit_sha():
         'Authorization': f'Bearer {config("BRIDA_TOKEN")}'
     }
     response = requests.get(url, headers=headers)
-    print(response.status_code)
     if response.status_code == 200:
         commit_sha = response.json()['commit']['sha']
         return commit_sha,response.status_code
@@ -68,10 +65,13 @@ def create_pull_request(branch_name):
         'base': 'main'
     }
     response = requests.post(url, headers=headers, json=data)
+    print(response.status_code)
     if response.status_code == 201:
         pull_request = response.json()
         print('Pull request criado com sucesso!')
         print('URL do pull request:', pull_request['html_url'])
+        return response.status_code,pull_request['html_url']
     else:
         print('Erro ao criar o pull request:', response.text)
-
+        print(response.status_code,response.json()['errors'][0]['message'])
+        return response.status_code,response.json()['errors'][0]['message']

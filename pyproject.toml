@@ -9,11 +9,9 @@ packages = [{include = "api_copiloto"}]
 [tool.poetry.dependencies]
 python = "^3.9"
 flask = "^2.3.2"
-pytest = "^7.4.0"
 python-dotenv = "^1.0.0"
 python-decouple = "^3.8"
 requests = "^2.31.0"
-flask-testing = "^0.8.1"
 requests-mock = "^1.11.0"
 
 
@@ -21,6 +19,8 @@ requests-mock = "^1.11.0"
 autopep8 = "^2.0.2"
 black = {version = "^22.1.0", allow-prereleases = true}
 pytest-cov = "^4.1.0"
+flask-testing = "^0.8.1"
+pytest = "^7.4.0"
 
 [build-system]
 requires = ["poetry-core"]

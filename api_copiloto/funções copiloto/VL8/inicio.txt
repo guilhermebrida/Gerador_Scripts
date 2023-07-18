@@ -112,11 +112,11 @@
 
 //Memoria Reservada para arquivos MP3
 //MP3 = 200K * 16 = 3 MBytes
->VSRM12,0,8192,208383<
+//>VSRM12,0,8192,208383<
 
 //Configurar RM12 para áudio
 //onde: 9 volume do áudio, RM12 definido para áudio
->TCFG04,912<
+//>TCFG04,912<
 
 //Alarmes - CT88 entre 1 e 2147483647
 >SUT49,QCT88,7,10,1,2147483647<

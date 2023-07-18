@@ -35,9 +35,33 @@
 
 body {
     font-family: Arial, sans-serif;
-    background-color: #f0f0f0;
+    background-color: #ccc;
     padding: 20px;
+    margin: 0;
 }
+
+.fora {
+  background-color: #fff;
+  padding: 20px 50px;
+  border-radius: 20px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+/* .left-items {
+  float: left;
+}
+
+.param-list {
+  margin-left: 00px; 
+}
+
+.param-list h3 {
+  margin-top: 0;
+}
+
+.left-items label, .param-list label {
+  display: block;
+  /* margin-bottom: 5px; */
+/* }  */
 
 h1 {
     color: #333;
@@ -78,6 +102,8 @@ input[type="submit"] {
 input[type="submit"]:hover {
     background-color: #555;
 }
+
+
 
 .dropdown {
     position: relative;
@@ -147,3 +173,4 @@ input[type="submit"]:hover {
     justify-content: space-between;
     margin-bottom: 10px;
   } */
+
