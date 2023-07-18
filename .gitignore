@@ -138,6 +138,7 @@ venv.bak/
 /js/env.js
 htmlcov/
 .coverage
+env.js
 
 # Spyder project settings
 .spyderproject
