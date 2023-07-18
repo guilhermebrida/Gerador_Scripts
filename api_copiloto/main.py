@@ -172,8 +172,9 @@ def Gerar_arquivo(hw,funcoes,parametros,ALARMES,cliente):
                 tudo = re.sub(sut13.split(',')[-2],f'{excesso}',tudo)
         if func == "Limite de Rotação Freio Motor (RPM)":
             freio_motor = parametros[func]
-            tudo = re.sub('>SUT14.*<',f'>SUT14,QCT27,7,15,{min_verde},{int(freio_motor)-1}<',tudo)
-            tudo = re.sub('>SUT15.*<',f'>SUT15,QCT27,7,15,{freio_motor},9999<',tudo)
+            if freio_motor != '9999':
+                tudo = re.sub('>SUT14.*<',f'>SUT14,QCT27,7,15,{min_verde},{int(freio_motor)-1}<',tudo)
+                tudo = re.sub('>SUT15.*<',f'>SUT15,QCT27,7,15,{freio_motor},9999<',tudo)
         if func == "Rotação para Troca de Marcha (RPM)":
             troca = parametros[func]
             tudo = re.sub('>SUT16.*<',f'>SUT16,QCT27,7,15,{troca},9999<',tudo)
@@ -209,9 +210,11 @@ def Gerar_arquivo(hw,funcoes,parametros,ALARMES,cliente):
         tudo = re.sub(">SXT0010010101_MD1<","",tudo)
         tudo = re.sub(">SSO<",">SXT0010010101_MD1<\n>SSO<",tudo)
     tudo = Gerar_alarmes(tudo,ALARMES)
-    with open(f'C:/Users/user/Downloads/{path}_{hw[0]}.txt', 'w') as fim:
+    # with open(f'C:/Users/user/Downloads/{path}_{hw[0]}.txt', 'w') as fim:
+    with open(f'/home/$USER/Downloads/{path}_{hw[0]}.txt', 'w') as fim:
         fim.write(tudo)
-    commit_file_to_github(f'C:/Users/user/Downloads/{path}_{hw[0]}.txt', path, hw, cliente)
+    # commit_file_to_github(f'C:/Users/user/Downloads/{path}_{hw[0]}.txt', path, hw, cliente)
+    commit_file_to_github(f'/home/$USER/Downloads/{path}_{hw[0]}.txt', path, hw, cliente)
     res = create_pull_request(path)
     return res
 
