@@ -5,7 +5,7 @@ from datetime import date
 import sys
 import os
 from decouple import config
-sys.path.append('C:/Python_scripts/Gerador_Scripts/api_copiloto/')
+sys.path.append('./api_copiloto/')
 from validate import *
 import requests
 import base64
