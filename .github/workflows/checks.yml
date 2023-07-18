@@ -22,15 +22,15 @@ jobs:
           python-version: '3.9'
 
       - name: Instalar pytest
-        run : poetry add pytest
-
+        run : |
+          poetry add pytest
+          poetry add python-decouple
       - name: Criar arquivo .env
         run: |
           echo "BRIDA_USER=${{ secrets.BRIDA_USER }}" >> .env
           echo "BRIDA_TOKEN=${{ secrets.BRIDA_TOKEN }}" >> .env
-          cat .env
-          echo "${{ secrets.BRIDA_USER }}"
-          echo "${{ secrets.BRIDA_TOKEN }}"
 
       - name: Test
-        run : poetry run pytest --cov
+        run : |
+          export $(cat .env | xargs) 
+          poetry run pytest --cov
