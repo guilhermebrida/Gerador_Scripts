@@ -19,7 +19,7 @@ def test_deve_retornar_True_caso_Tablet_nao_compativel_com_hw(hw):
 
 @pytest.mark.parametrize('hw',('4','5'))
 def test_deve_retornar_True_caso_Sleep_nao_compativel_com_hw(hw):
-    assert validate_function('hw',['14']) == True
+    assert validate_function([hw],['14']) == True
 
 def test_retorna_true_se_mifare_externo_e_interno_estiverem_marcados():
     assert validate_mifares(['11','12']) == True
