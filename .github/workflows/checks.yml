@@ -34,7 +34,8 @@ jobs:
       - name: Testes
         run : |
           # export $(cat .env | xargs) 
-          poetry run pytest --cov-report=xml
+          poetry run pytest --cov
+          poetry run coverage xml
 
       - name: Upload coverage reports to Codecov
         uses: codecov/codecov-action@v3
