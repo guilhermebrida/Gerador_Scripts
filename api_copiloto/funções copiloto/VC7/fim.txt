@@ -4,6 +4,9 @@
 
 >STP01 -<
 
+//Bitmap funcionalidades ativas, 1 = inicialização  
+>STP15 1<
+
 //--------------------------------------------------------------------------
 
 //Precisa enviar os alarmes ativos no fim para garantir que não serão

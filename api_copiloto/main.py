@@ -10,8 +10,7 @@ from validate import *
 import requests
 import base64
 import json
-from requests.auth import HTTPBasicAuth
-from pprint import pprint
+import platform
 from git_api import *
 
 
@@ -113,7 +112,7 @@ checkboxes_alarmes = {
 }
 
 
-def Gerar_arquivo(hw,funcoes,parametros,ALARMES,cliente):
+def Gerar_arquivo(hw,funcoes,parametros,ALARMES,cliente,selected_checkboxes):
     checkbox_names = get_checkbox_names(hw[0])
     with open(f'./api_copiloto/funções copiloto/{hw[0]}/inicio.txt', 'r') as t:
         tudo = t.read()
@@ -211,11 +210,15 @@ def Gerar_arquivo(hw,funcoes,parametros,ALARMES,cliente):
         tudo = re.sub(">SXT0010010101_MD1<","",tudo)
         tudo = re.sub(">SSO<",">SXT0010010101_MD1<\n>SSO<",tudo)
     tudo = Gerar_alarmes(tudo,ALARMES)
-    # with open(f'C:/Users/user/Downloads/{path}_{hw[0]}.txt', 'w') as fim:
-    with open(f'/tmp/{path}_{hw[0]}.txt', 'w') as fim:
-        fim.write(tudo)
-    # commit_file_to_github(f'C:/Users/user/Downloads/{path}_{hw[0]}.txt', path, hw, cliente)
-    commit_file_to_github(f'/tmp/{path}_{hw[0]}.txt', path, hw, cliente)
+    tudo = bitmap_funcionaliades(tudo, selected_checkboxes)
+    if platform.system() == "Windows":
+        with open(f'C:/Users/user/Downloads/{path}_{hw[0]}.txt', 'w') as fim:
+            fim.write(tudo)
+        commit_file_to_github(f'C:/Users/user/Downloads/{path}_{hw[0]}.txt', path, hw, cliente)
+    if platform.system() == "Linux":
+        with open(f'/tmp/{path}_{hw[0]}.txt', 'w') as fim:
+            fim.write(tudo)
+        commit_file_to_github(f'/tmp/{path}_{hw[0]}.txt', path, hw, cliente)
     res = create_pull_request(path)
     return res
 
@@ -269,6 +272,15 @@ def Get_alarms(alarme_escolhido):
         ALARMES.append(parameter_name)
     return ALARMES
 
+def bitmap_funcionaliades(tudo,selected_checkboxes):
+    bitmap = 1
+    for i in selected_checkboxes:
+        bitmap = bitmap + 2**int(i)
+    tudo = re.sub('>STP15 1<',f'>STP15 {bitmap}<',tudo)
+    return tudo
+
+
+
 @app.route('/')
 def index():
     checkboxes = zip(range(1, len(checkbox_names) + 1), checkbox_names)
@@ -310,7 +322,7 @@ def submit():
         return render_template('popup.html', validate=validate)
     if validate_cc:
         return render_template('popup.html', validate_cc=validate_cc)
-    res = Gerar_arquivo(hw,funcoes,values,ALARMES,cliente)
+    res = Gerar_arquivo(hw,funcoes,values,ALARMES,cliente,selected_checkboxes)
     return render_template('submit.html', hardware=hw_escolhido,cliente=cliente,funcoes=funcoes,values=values,
                             alarmes=ALARMES,status_code=res[0],pull_request=res[1])
  

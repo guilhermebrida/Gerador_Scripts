@@ -1,6 +1,6 @@
 
 window.BRIDA_USER = 'guilhermebrida';
-window.BRIDA_TOKEN = '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';
+window.BRIDA_TOKEN = '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';
 // window.BRIDA_TOKEN = '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';
 // window.BRIDA_TOKEN = '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';
 // window.BRIDA_TOKEN = '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';
