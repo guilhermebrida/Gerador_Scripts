@@ -212,10 +212,10 @@ def Gerar_arquivo(hw,funcoes,parametros,ALARMES,cliente):
         tudo = re.sub(">SSO<",">SXT0010010101_MD1<\n>SSO<",tudo)
     tudo = Gerar_alarmes(tudo,ALARMES)
     # with open(f'C:/Users/user/Downloads/{path}_{hw[0]}.txt', 'w') as fim:
-    with open(f'/home/ubuntu/Downloads/{path}_{hw[0]}.txt', 'w') as fim:
+    with open(f'/tmp/{path}_{hw[0]}.txt', 'w') as fim:
         fim.write(tudo)
     # commit_file_to_github(f'C:/Users/user/Downloads/{path}_{hw[0]}.txt', path, hw, cliente)
-    commit_file_to_github(f'/home/ubuntu/Downloads/{path}_{hw[0]}.txt', path, hw, cliente)
+    commit_file_to_github(f'/tmp/{path}_{hw[0]}.txt', path, hw, cliente)
     res = create_pull_request(path)
     return res
 
