@@ -139,6 +139,7 @@ venv.bak/
 htmlcov/
 .coverage
 api_copiloto/js/env.js
+./api_copiloto/js/env.js
 
 # Spyder project settings
 .spyderproject
