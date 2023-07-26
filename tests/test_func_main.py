@@ -228,27 +228,29 @@ def test_deve_retornar_bitmap_para_as_primeiras_10_funcionalidades_escolhidas():
 @mock.patch('api_copiloto.main.create_pull_request')
 @mock.patch('api_copiloto.main.commit_file_to_github')
 def test_deve_postar_arquivo_no_git_maquina_windows(mock_commit,mock_pull,mock_sys):
-    mock_sys.return_value = 'Windows'
-    mock_commit.return_value = 201
-    mock_pull.return_value = [201, 'Pull Request OK']
-    with patch(
-        'builtins.open', mock_open(read_data='arquivo teste')
-    ) as mock_open_file:
-        resultado = Post_file('path/teste', ['1'], 'teste','tudo')
-        assert resultado[0] == 201
-        assert resultado[1] == 'Pull Request OK'
+    if platform.system() == 'Windows':
+        mock_sys.return_value = 'Windows'
+        mock_commit.return_value = 201
+        mock_pull.return_value = [201, 'Pull Request OK']
+        with patch(
+            'builtins.open', mock_open(read_data='arquivo teste')
+        ) as mock_open_file:
+            resultado = Post_file('path/teste', ['1'], 'teste','tudo')
+            assert resultado[0] == 201
+            assert resultado[1] == 'Pull Request OK'
 
 
 @mock.patch('api_copiloto.main.platform.system')
 @mock.patch('api_copiloto.main.create_pull_request')
 @mock.patch('api_copiloto.main.commit_file_to_github')
 def test_deve_postar_arquivo_no_git_maquina_Linux(mock_commit,mock_pull,mock_sys):
-    mock_sys.return_value = 'Linux'
-    mock_commit.return_value = 201
-    mock_pull.return_value = [201, 'Pull Request OK']
-    with patch(
-        'builtins.open', mock_open(read_data='arquivo teste')
-    ) as mock_open_file:
-        resultado = Post_file('path/teste', ['1'], 'teste','tudo')
-        assert resultado[0] == 201
-        assert resultado[1] == 'Pull Request OK'
+    if platform.system() == 'Linux':
+        mock_sys.return_value = 'Linux'
+        mock_commit.return_value = 201
+        mock_pull.return_value = [201, 'Pull Request OK']
+        with patch(
+            'builtins.open', mock_open(read_data='arquivo teste')
+        ) as mock_open_file:
+            resultado = Post_file('path/teste', ['1'], 'teste','tudo')
+            assert resultado[0] == 201
+            assert resultado[1] == 'Pull Request OK'
