@@ -13,10 +13,10 @@ def create_branch(new_branch):
         'sha': get_commit_sha()[0]
     }
     response = requests.post(url, headers=headers, json=data)
-    if response.status_code == 201:
-        print(f'Branch "{new_branch}" criada com sucesso!')
-    else:
-        print('Erro ao criar a branch:', response.text)
+    # if response.status_code == 201:
+    #     print(f'Branch "{new_branch}" criada com sucesso!')
+    # else:
+    #     print('Erro ao criar a branch:', response.text)
 
 def commit_file_to_github(file_path, branch_name, hw, cliente):
     create_branch(branch_name)
@@ -46,8 +46,6 @@ def get_commit_sha():
     if response.status_code == 200:
         commit_sha = response.json()['commit']['sha']
         return commit_sha,response.status_code
-    else:
-        print('Erro ao obter o SHA do commit:', response.text)
     return None
 
 def create_pull_request(branch_name):
@@ -65,10 +63,6 @@ def create_pull_request(branch_name):
     response = requests.post(url, headers=headers, json=data)
     if response.status_code == 201:
         pull_request = response.json()
-        print('Pull request criado com sucesso!')
-        print('URL do pull request:', pull_request['html_url'])
         return response.status_code,pull_request['html_url']
     else:
-        print('Erro ao criar o pull request:', response.text)
-        print(response.status_code,response.json()['errors'][0]['message'])
         return response.status_code,response.json()['errors'][0]['message']
