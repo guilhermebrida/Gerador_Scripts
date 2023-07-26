@@ -4,7 +4,7 @@
 //************************************
 
 //Padrão Desabilitado
->SSH150<
+>SSH151<
 
 //Valores iniciais
 //TMC = 2,5h    =  9000  seg (CT14)

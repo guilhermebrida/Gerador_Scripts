@@ -6,9 +6,8 @@ from unittest import mock
 import requests
 import sys
 from flask_testing import TestCase
-
 sys.path.append('C:/Python_scripts/Gerador_Scripts/api_copiloto/')
-import main
+
 
 
 def test_deve_receber_um_customer_child_id_e_retornar_como_uma_tag():
@@ -151,12 +150,13 @@ def test_deve_retornar_os_limites_de_dirigibilidade(monkeypatch):
         result = Get_values(checkbox_names_var)
         assert result == assert_values
 
-
-@mock.patch('api_copiloto.main.create_pull_request')
-@mock.patch('api_copiloto.main.commit_file_to_github')
+@mock.patch('api_copiloto.main.Post_file')
 def test_deve_retornar_ur_arquivo_com_os_parametros(
-    mock_commit, mock_pull, monkeypatch
+     mock_post_file, monkeypatch
 ):
+    arquivo = 'arquivo teste\n>SUT11,QCT27,7,15,400,800<\n>SUT12,QCT27,7,15,1111,2222<\n \
+                >SUT13,QCT27,7,15,3333,9999<\n>SUT14,QCT27,7,15,1111,4443<\n \
+                >SUT15,QCT27,7,15,4444,9999< \n>SXT0010010101_MD1<'
     funcoes = [
         'Tracking',
         'Faixas RPM',
@@ -171,10 +171,10 @@ def test_deve_retornar_ur_arquivo_com_os_parametros(
         'Mifare externo',
         'Condução ininterrupta',
         'Modo Sleep',
+        'Rotas SP',
         'Tablet',
         'Lora',
     ]
-
     parametros = {
         'Nome do Arquivo': 'teste',
         'Id Arquivo configurador': 'teste',
@@ -210,10 +210,9 @@ def test_deve_retornar_ur_arquivo_com_os_parametros(
         'Parada com Motor Ligado',
     ]
 
-    mock_commit.return_value = 201
-    mock_pull.return_value = [201, 'Pull Request OK']
+    mock_post_file.return_value = [201, 'Pull Request OK']
     with patch(
-        'builtins.open', mock_open(read_data='arquivo de teste')
+        'builtins.open', mock_open(read_data=arquivo)
     ) as mock_open_file:
         resultado = Gerar_arquivo('S8', funcoes, parametros, ALARMES, 'teste',['1'])
         assert resultado[0] == 201
@@ -223,3 +222,33 @@ def test_deve_retornar_ur_arquivo_com_os_parametros(
 def test_deve_retornar_bitmap_para_as_primeiras_10_funcionalidades_escolhidas():
     checkbox_marcadas = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10']
     assert bitmap_funcionaliades('>STP15 1<',checkbox_marcadas) == '>STP15 2047<'
+
+
+@mock.patch('api_copiloto.main.platform.system')
+@mock.patch('api_copiloto.main.create_pull_request')
+@mock.patch('api_copiloto.main.commit_file_to_github')
+def test_deve_postar_arquivo_no_git_maquina_windows(mock_commit,mock_pull,mock_sys):
+    mock_sys.return_value = 'Windows'
+    mock_commit.return_value = 201
+    mock_pull.return_value = [201, 'Pull Request OK']
+    with patch(
+        'builtins.open', mock_open(read_data='arquivo teste')
+    ) as mock_open_file:
+        resultado = Post_file('path/teste', ['1'], 'teste','tudo')
+        assert resultado[0] == 201
+        assert resultado[1] == 'Pull Request OK'
+
+
+@mock.patch('api_copiloto.main.platform.system')
+@mock.patch('api_copiloto.main.create_pull_request')
+@mock.patch('api_copiloto.main.commit_file_to_github')
+def test_deve_postar_arquivo_no_git_maquina_Linux(mock_commit,mock_pull,mock_sys):
+    mock_sys.return_value = 'Linux'
+    mock_commit.return_value = 201
+    mock_pull.return_value = [201, 'Pull Request OK']
+    with patch(
+        'builtins.open', mock_open(read_data='arquivo teste')
+    ) as mock_open_file:
+        resultado = Post_file('path/teste', ['1'], 'teste','tudo')
+        assert resultado[0] == 201
+        assert resultado[1] == 'Pull Request OK'
