@@ -12,6 +12,7 @@ import base64
 import json
 import platform
 from git_api import *
+import inspect
 
 
 app = Flask(__name__)
@@ -65,28 +66,28 @@ checkbox_names = {
     "Lora":"./api_copiloto/funções copiloto/VL8/LORA.txt"
 }
 
-checkbox_names_var = [
-    "Nome do Arquivo",
-    "Id Arquivo configurador",
-    "Customer Child ID",
-    "Limite de Velocidade (Km/h)",
-    "Limite de Velocidade com Chuva (Km/h)",
-    "Limite de Velocidade Carregado (Km/h)",
-    "Tempo de Tolerância à Infração de Velocidade (Segundos)",
-    "Freada Brusca (km/h/s)",
-    "Limite de Aceleração Brusca (km/h/s)",
-    "Rotação de Marcha Lenta (RPM)",
-    "Rotação Minima de Faixa Verde (RPM)",
-    "Rotação Máxima de Faixa Verde (RPM)",
-    "Limite de Rotação (RPM)",
-    "Limite de Rotação Freio Motor (RPM)",
-    "Rotação para Troca de Marcha (RPM)",
-    "Tempo de Parada com Motor Ligado (Segundos)",
-    "Tempo máximo de condução (minutos)",
-    "Tempo de descanso obrigatório (minutos)",
-    "Tolerância para iniciar o descanso obrigatório (minutos)",
-    "Nome da rede Lora"
-]
+checkbox_names_var = {
+    "Nome do Arquivo": lambda value : nome_arquivo(value),
+    "Id Arquivo configurador": lambda tudo, value: id_arquivo(tudo,value),
+    "Customer Child ID": lambda tudo, tag: Gera_tag(tudo,tag),
+    "Limite de Velocidade (Km/h)": lambda tudo, value: limite_velocidade(tudo,value),
+    "Limite de Velocidade com Chuva (Km/h)": lambda tudo, value: limite_vel_chuva(tudo,value),
+    "Limite de Velocidade Carregado (Km/h)": lambda tudo, value: limite_vel_carregado(tudo,value),
+    "Tempo de Tolerância à Infração de Velocidade (Segundos)": lambda tudo, value: tolerancia_infra_vel(tudo,value),
+    "Freada Brusca (km/h/s)": lambda tudo, value: freada_brusca(tudo,value),
+    "Limite de Aceleração Brusca (km/h/s)": lambda tudo, value: aceleracao_brusca(tudo,value),
+    "Rotação de Marcha Lenta (RPM)": lambda tudo, value: marcha_lenta(tudo,value),
+    "Rotação Minima de Faixa Verde (RPM)": lambda tudo, value: min_faixa_verde(tudo,value),
+    "Rotação Máxima de Faixa Verde (RPM)": lambda tudo, value: max_faixa_verde(tudo,value),
+    "Limite de Rotação (RPM)": lambda tudo, value: limite_rotacao(tudo,value),
+    "Limite de Rotação Freio Motor (RPM)": lambda tudo, value,min_verde: freio_motor(tudo,value,min_verde),
+    "Rotação para Troca de Marcha (RPM)": lambda tudo, value: troca_marcha(tudo,value),
+    "Tempo de Parada com Motor Ligado (Segundos)": lambda tudo, value: parada_motor_ligado(tudo,value),
+    "Tempo máximo de condução (minutos)": lambda tudo, value: tempo_max_conducao(tudo,value),
+    "Tempo de descanso obrigatório (minutos)": lambda tudo, value: tempo_descanso(tudo,value),
+    "Tolerância para iniciar o descanso obrigatório (minutos)": lambda tudo, value: tolerancia_descanso(tudo,value),
+    "Nome da rede Lora": lambda tudo, value: lora(tudo,value)
+}
 
 checkboxes_alarmes = {
     "Pedido Motorista":268435456,
@@ -130,81 +131,21 @@ def Gerar_arquivo(hw,funcoes,parametros,ALARMES,cliente,selected_checkboxes):
     with open(f'./api_copiloto/funções copiloto/{hw[0]}/fim.txt', 'r') as t:
         tudo += '\n' + t.read()
     for func in parametros:
-        if func == "Customer Child ID":
-            tudo = Gera_tag(tudo,parametros[func])
-        if func == "Limite de Velocidade (Km/h)":
-            lim_vel = parametros[func]
-            tudo = re.sub(">SCT11.*<",f'>SCT11 {lim_vel}900<', tudo)
-        if func == "Limite de Velocidade com Chuva (Km/h)":
-            lim_vel_chuva = parametros[func]
-            tudo = re.sub(">SCT12.*<",f'>SCT12 {lim_vel_chuva}900<', tudo)
-        if func == "Limite de Velocidade Carregado (Km/h)":
-            lim_vel_carregado = parametros[func]
-            tudo = re.sub(">SCT13.*<",f'>SCT13 {lim_vel_carregado}900<', tudo)
-        if func == "Tempo de Tolerância à Infração de Velocidade (Segundos)":
-            tolerancia_vel = parametros[func]
-            tudo = re.sub(">SCT06.*<",f'>SCT06 {tolerancia_vel}<', tudo)
-        if func == "Freada Brusca (km/h/s)":
-            freada = parametros[func]
-            tudo = re.sub(">SCT08.*<",f'>SCT08 0-{freada}<', tudo)
-        if func == "Limite de Aceleração Brusca (km/h/s)":
-            acel = parametros[func]
-            tudo = re.sub(">SCT09.*<",f'>SCT09 {acel}<', tudo)
-        if func == "Rotação de Marcha Lenta (RPM)":
-            lenta = parametros[func]
-            if re.search('>SUT11.*<',tudo) is not None:
-                sut11 = re.search('>SUT11.*<',tudo).group()
-                tudo = re.sub(sut11.split(',')[-1],f'{lenta}<',tudo)
-        if func == "Rotação Minima de Faixa Verde (RPM)":
-            min_verde = parametros[func]
-            if re.search('>SUT12.*<',tudo) is not None:
-                sut12 = re.search('>SUT12.*<',tudo).group()
-                tudo = re.sub(sut12.split(',')[-2],f'{min_verde}',tudo)
-        if func == "Rotação Máxima de Faixa Verde (RPM)":
-            max_verde = parametros[func]
-            if re.search('>SUT12.*<',tudo) is not None:
-                sut12 = re.search('>SUT12.*<',tudo).group()
-                tudo = re.sub(sut12.split(',')[-1],f'{max_verde}<',tudo)
-        if func == "Limite de Rotação (RPM)":
-            excesso = parametros[func]
-            if re.search('>SUT13.*<',tudo) is not None:
-                sut13 = re.search('>SUT13.*<',tudo).group()
-                tudo = re.sub(sut13.split(',')[-2],f'{excesso}',tudo)
-        if func == "Limite de Rotação Freio Motor (RPM)":
-            freio_motor = parametros[func]
-            if freio_motor != '9999':
-                tudo = re.sub('>SUT14.*<',f'>SUT14,QCT27,7,15,{min_verde},{int(freio_motor)-1}<',tudo)
-                tudo = re.sub('>SUT15.*<',f'>SUT15,QCT27,7,15,{freio_motor},9999<',tudo)
-        if func == "Rotação para Troca de Marcha (RPM)":
-            troca = parametros[func]
-            tudo = re.sub('>SUT16.*<',f'>SUT16,QCT27,7,15,{troca},9999<',tudo)
-        if func == "Tempo de Parada com Motor Ligado (Segundos)":
-            tempo_parada = parametros[func]
-            tudo = re.sub(">SCT04.*<",f'>SCT04 {tempo_parada}<', tudo)
-        if func == "Tempo máximo de condução (minutos)":
-            tempo_max_cond = parametros[func]
-            tudo = re.sub(">SCT14.*<",f'>SCT14 {int(tempo_max_cond)*60}<', tudo)
-        if func == "Tempo de descanso obrigatório (minutos)":
-            descanso_obrigatorio = parametros[func]
-            tudo = re.sub(">SCT17.*<",f'>SCT17 {int(descanso_obrigatorio)*60}<', tudo)
-        if func == "Tolerância para iniciar o descanso obrigatório (minutos)":
-            tol_descanso = parametros[func]
-            tudo = re.sub(">SCT15.*<",f'>SCT15 {int(tol_descanso)*60}<', tudo)
-        if func == "Nome da rede Lora":
-            rede_lora = ''.join(str(ord(char)) for char in parametros[func])
-            tudo = re.sub('000102030405060708090A0B0C0D0E0F',rede_lora,tudo)
-        if func == "Id Arquivo configurador":
-            tp = parametros[func]
-            tp = re.sub(" ", "_",tp)
-            versao = str(date.today())
-            versao = versao.replace('-', '')[-6::]
-            tudo = re.sub(">STP01.*<",f">STP01 {tp}.{versao}<",tudo)
+        strategy = checkbox_names_var.get(func)
+        value = parametros[func]
+        # if func != "Nome do Arquivo" or func != "Limite de Rotação Freio Motor (RPM)":
+        #     print(func)
+        #     tudo = strategy(tudo, value)
         if func == "Nome do Arquivo":
-            path = parametros[func]
-            path = re.sub(" ", "_",path)
+            path = strategy(parametros[func]) 
+        elif func == "Limite de Rotação Freio Motor (RPM)":
+            print('aquiii')
+            tudo = strategy(tudo,value,parametros["Rotação Minima de Faixa Verde (RPM)"])
+        else:
+            print(func)
+            tudo = strategy(tudo, value)
         if "Modo Sleep"and "Condução ininterrupta" in funcoes and func == "Tempo de descanso obrigatório (minutos)":
-            sleep = str(int(descanso_obrigatorio)*60+300).zfill(4)
-            tudo = re.sub('>VSKO0600060000900120_INS1_CAN1_EVP1800<',f'>VSKO{sleep}{sleep}00900120_INS1_CAN1_EVP1800<',tudo)
+            tudo = sleep(tudo, parametros["Tempo de descanso obrigatório (minutos)"])
     sxt = re.search('>SXT0010010101_MD1<',tudo)
     if sxt is not None:
         tudo = re.sub(">SXT0010010101_MD1<","",tudo)
@@ -212,7 +153,8 @@ def Gerar_arquivo(hw,funcoes,parametros,ALARMES,cliente,selected_checkboxes):
     tudo = Gerar_alarmes(tudo,ALARMES)
     tudo = bitmap_funcionaliades(tudo, selected_checkboxes)
     if platform.system() == "Windows":
-        with open(f'C:/Users/user/Downloads/{path}_{hw[0]}.txt', 'w') as fim:
+        downloads_path = os.path.join(os.environ['USERPROFILE'], 'Downloads')
+        with open(os.path.join(downloads_path, f'{path}_{hw[0]}.txt'), 'w') as fim:
             fim.write(tudo)
         commit_file_to_github(f'C:/Users/user/Downloads/{path}_{hw[0]}.txt', path, hw, cliente)
     if platform.system() == "Linux":
@@ -221,6 +163,88 @@ def Gerar_arquivo(hw,funcoes,parametros,ALARMES,cliente,selected_checkboxes):
         commit_file_to_github(f'/tmp/{path}_{hw[0]}.txt', path, hw, cliente)
     res = create_pull_request(path)
     return res
+
+
+def limite_velocidade(tudo,value):
+    return re.sub(">SCT11.*<",f'>SCT11 {value}900<', tudo)
+
+def limite_vel_chuva(tudo,value):
+    return re.sub(">SCT12.*<",f'>SCT12 {value}900<', tudo)
+
+def limite_vel_carregado(tudo,value):
+    return re.sub(">SCT13.*<",f'>SCT13 {value}900<', tudo)
+
+def tolerancia_infra_vel(tudo,value):
+    return re.sub(">SCT06.*<",f'>SCT06 {value}<', tudo)
+
+def freada_brusca(tudo,value):
+    return re.sub(">SCT08.*<",f'>SCT08 0-{value}<', tudo)
+
+def aceleracao_brusca(tudo,value):
+    return re.sub(">SCT09.*<",f'>SCT09 {value}<', tudo)
+
+def marcha_lenta(tudo,value):
+    if re.search('>SUT11.*<',tudo) is not None:
+        sut11 = re.search('>SUT11.*<',tudo).group()
+        return re.sub(sut11.split(',')[-1],f'{value}<',tudo)
+
+def min_faixa_verde(tudo,value):
+    if re.search('>SUT12.*<',tudo) is not None:
+        sut12 = re.search('>SUT12.*<',tudo).group()
+        return re.sub(sut12.split(',')[-2],f'{value}',tudo)
+
+def max_faixa_verde(tudo,value):
+    if re.search('>SUT12.*<',tudo) is not None:
+        sut12 = re.search('>SUT12.*<',tudo).group()
+        return re.sub(sut12.split(',')[-1],f'{value}<',tudo)
+
+def limite_rotacao(tudo, value):
+    if re.search('>SUT13.*<',tudo) is not None:
+        sut13 = re.search('>SUT13.*<',tudo).group()
+        return re.sub(sut13.split(',')[-2],f'{value}',tudo)
+
+def freio_motor(tudo, value, min_verde):
+    print(min_verde)
+    if freio_motor != '9999':
+        tudo = re.sub('>SUT14.*<',f'>SUT14,QCT27,7,15,{min_verde},{int(value)-1}<',tudo)
+        return re.sub('>SUT15.*<',f'>SUT15,QCT27,7,15,{value},9999<',tudo)
+
+def troca_marcha(tudo, value):
+    return re.sub('>SUT16.*<',f'>SUT16,QCT27,7,15,{value},9999<',tudo)
+
+def parada_motor_ligado(tudo, value):
+    return re.sub(">SCT04.*<",f'>SCT04 {value}<', tudo)
+
+def tempo_max_conducao(tudo, value):
+    return re.sub(">SCT14.*<",f'>SCT14 {int(value)*60}<', tudo)
+
+def tempo_descanso(tudo, value):
+    return re.sub(">SCT17.*<",f'>SCT17 {int(value)*60}<', tudo)
+
+def tolerancia_descanso(tudo, value):
+    return re.sub(">SCT15.*<",f'>SCT15 {int(value)*60}<', tudo)
+
+def lora(tudo, value):
+    rede_lora = ''.join(str(ord(char)) for char in value)
+    return re.sub('000102030405060708090A0B0C0D0E0F',rede_lora,tudo)
+
+def id_arquivo(tudo, value):
+    tp = value
+    tp = re.sub(" ", "_",tp)
+    versao = str(date.today())
+    versao = versao.replace('-', '')[-6::]
+    return re.sub(">STP01.*<",f">STP01 {tp}.{versao}<",tudo)
+
+def nome_arquivo(value):
+    path = value
+    path = re.sub(" ", "_",path)
+    return path
+
+def sleep(tudo, value):
+    print(value)
+    sleep = str(int(value)*60+300).zfill(4)
+    print(sleep)
+    return re.sub('>VSKO0600060000900120_INS1_CAN1_EVP1800<',f'>VSKO{sleep}{sleep}00900120_INS1_CAN1_EVP1800<',tudo)
 
 def Gera_tag(tudo,tag):
     return f'//[cc.id]{tag}[cc.id]\n\n' + tudo
@@ -247,10 +271,18 @@ def Hardwares(hw):
     if hw == 'S1':
         return ['VL6', 'Virloc6']
 
+# def Get_values(checkbox_names_var):
+#     values = {}
+#     for var in checkbox_names_var:
+#         input_name = 'input_' + str(checkbox_names_var.index(var)+1)
+#         value = request.form.get(input_name)
+#         if value:
+#             values[var] = value
+#     return values
 def Get_values(checkbox_names_var):
     values = {}
-    for var in checkbox_names_var:
-        input_name = 'input_' + str(checkbox_names_var.index(var)+1)
+    for index, var in enumerate(checkbox_names_var, start=1):
+        input_name = 'input_' + str(index)
         value = request.form.get(input_name)
         if value:
             values[var] = value
