@@ -13,8 +13,6 @@ def create_branch(new_branch):
         'sha': get_commit_sha()[0]
     }
     response = requests.post(url, headers=headers, json=data)
-    # print(response.content)
-    print(response.status_code)
     if response.status_code == 201:
         print(f'Branch "{new_branch}" criada com sucesso!')
     else:
@@ -65,7 +63,6 @@ def create_pull_request(branch_name):
         'base': 'main'
     }
     response = requests.post(url, headers=headers, json=data)
-    print(response.status_code)
     if response.status_code == 201:
         pull_request = response.json()
         print('Pull request criado com sucesso!')
