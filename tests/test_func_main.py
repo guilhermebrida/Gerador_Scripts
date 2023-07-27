@@ -221,7 +221,7 @@ def test_deve_retornar_ur_arquivo_com_os_parametros(
 
 def test_deve_retornar_bitmap_para_as_primeiras_10_funcionalidades_escolhidas():
     checkbox_marcadas = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10']
-    assert bitmap_funcionaliades('>STP15 1<',checkbox_marcadas) == '>STP15 2047<'
+    assert bitmap_funcionaliades('>STP15 1<',checkbox_marcadas) == '>STP15 1023<'
 
 
 @mock.patch('api_copiloto.main.platform.system')

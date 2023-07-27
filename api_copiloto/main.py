@@ -231,9 +231,9 @@ def Get_alarms(alarme_escolhido):
     return ALARMES
 
 def bitmap_funcionaliades(tudo,selected_checkboxes):
-    bitmap = 1
+    bitmap = 0
     for i in selected_checkboxes:
-        bitmap = bitmap + 2**int(i)
+        bitmap = bitmap + 2**(int(i)-1)
     tudo = re.sub('>STP15 1<',f'>STP15 {bitmap}<',tudo)
     return tudo
 
