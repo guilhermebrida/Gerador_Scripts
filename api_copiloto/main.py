@@ -202,8 +202,8 @@ def Hardwares(hw):
         return ['VL10','Virloc10']
     if hw == 'S3+':
         return ['VL12','Virloc12']
-    if hw == 'S1':
-        return ['VL6', 'Virloc6']
+    # if hw == 'S1':
+    #     return ['VL6', 'Virloc6']
 
 def Get_values(checkbox_names_var):
     values = {}
