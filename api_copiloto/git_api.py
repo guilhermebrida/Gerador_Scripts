@@ -13,10 +13,7 @@ def create_branch(new_branch):
         'sha': get_commit_sha()[0]
     }
     response = requests.post(url, headers=headers, json=data)
-    # if response.status_code == 201:
-    #     print(f'Branch "{new_branch}" criada com sucesso!')
-    # else:
-    #     print('Erro ao criar a branch:', response.text)
+
 
 def commit_file_to_github(file_path, branch_name, hw, cliente):
     create_branch(branch_name)
