@@ -4,7 +4,7 @@
 
 >STP01 -<
 
-//Bitmap funcionalidades ativas, 1 = inicialização  
+//Bitmap funcionalidades ativas
 >STP15 1<
 
 //--------------------------------------------------------------------------

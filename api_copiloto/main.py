@@ -155,18 +155,6 @@ def Gerar_arquivo(hw,funcoes,parametros,ALARMES,cliente,selected_checkboxes):
     res = Post_file(path, hw, cliente, tudo)
     return res
 
-# def Post_file(path, hw, cliente, tudo):
-#     if platform.system() == "Windows":
-#         downloads_path = os.path.join(os.environ['USERPROFILE'], 'Downloads')
-#         with open(os.path.join(downloads_path, f'{path}_{hw[0]}.txt'), 'w') as fim:
-#             fim.write(tudo)
-#         commit_file_to_github(os.path.join(downloads_path, f'{path}_{hw[0]}.txt'), path, hw, cliente)
-#     if platform.system() == "Linux":
-#         with open(f'/tmp/{path}_{hw[0]}.txt', 'w') as fim:
-#             fim.write(tudo)
-#         commit_file_to_github(f'/tmp/{path}_{hw[0]}.txt', path, hw, cliente)
-#     res = create_pull_request(path)
-#     return res
 def Post_file(path, hw, cliente, tudo):
     if platform.system() == "Windows":
         downloads_path = os.path.join(os.path.expanduser('~'), 'Downloads')
@@ -202,8 +190,6 @@ def Hardwares(hw):
         return ['VL10','Virloc10']
     if hw == 'S3+':
         return ['VL12','Virloc12']
-    # if hw == 'S1':
-    #     return ['VL6', 'Virloc6']
 
 def Get_values(checkbox_names_var):
     values = {}
