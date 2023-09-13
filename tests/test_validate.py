@@ -1,4 +1,4 @@
-from api_copiloto.validate import *
+from api_copiloto.backend.validate import *
 import pytest
 
 def test_deve_retornar_True_caso_Customer_Child_ID_nao_esteja_na_lista_de_parametro():

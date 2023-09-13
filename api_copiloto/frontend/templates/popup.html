@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Popup</title>
+    <link rel="stylesheet" href="/static/css/styles.css">
+</head>
+<body>
+    {% if valida_mifare %}
+    <div class="popup" id="popup">
+        <div class="h2-center" id="h2-center">
+            <h2>Erro ao gerar Script</h2>
+        </div>
+        <p>Você deve escolher apenas uma opção de Mifare.</p>
+        <button onclick="closePopup()">Fechar</button>
+    </div>
+    {% endif %}
+    {% if valida_funcao %}
+    <div class="popup" id="popup">
+        <div class="h2-center" id="h2-center">
+            <h2>Erro ao gerar Script</h2>
+        </div>
+        <p>Função incompatível com o Hardware.</p>
+        <button onclick="closePopup()">Fechar</button>
+    </div>
+    {% endif %}
+    {% if hardwares_condition %}
+    <div class="popup" id="popup">
+        <div class="h2-center" id="h2-center">
+            <h2>Erro ao gerar Script</h2>
+        </div>
+        <p>Você não pode escolher mais de um Hardware.</p>
+        <button onclick="closePopup()">Fechar</button>
+    </div>
+    {% endif %}
+    {% if none_hw %}
+    <div class="popup" id="popup">
+        <div class="h2-center" id="h2-center">
+            <h2>Erro ao gerar Script</h2>
+        </div>
+        <p>Você deve escolher um Hardware.</p>
+        <button onclick="closePopup()">Fechar</button>
+    </div>
+    {% endif %}
+    {% if condition %}
+    <div class="popup" id="popup">
+        <div class="h2-center" id="h2-center">
+            <h2>Erro ao gerar Script</h2>
+        </div>
+        <p>Você não pode marcar as checkboxes "Cercas" e "Rotas SP" simultaneamente.</p>
+        <button onclick="closePopup()">Fechar</button>
+    </div>
+    {% endif %}
+    {% if validate %}
+    <div class="popup" id="popup">
+        <div class="h2-center" id="h2-center">
+            <h2>Erro ao gerar Script</h2>
+        </div>
+        <p>Você deve inserir um nome para o Script.</p>
+        <button onclick="closePopup()">Fechar</button>
+    </div>
+    {% endif %}
+    {% if validate_cc %}
+    <div class="popup" id="popup">
+        <div class="h2-center" id="h2-center">
+            <h2>Erro ao gerar Script</h2>
+        </div>
+        <p>Você deve inserir um Customer Child ID da empresa que utilizará o script.</p>
+        <button onclick="closePopup()">Fechar</button>
+    </div>
+    {% endif %}
+    <script>
+        window.addEventListener('DOMContentLoaded', (event) => {
+            var popup = document.getElementById("popup");
+            popup.style.display = "block";
+        });
+
+        function closePopup() {
+            var popup = document.getElementById("popup");
+            popup.style.display = "none";
+            window.location.href = "/";
+        }
+    </script>
+</body>
+</html>

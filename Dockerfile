@@ -11,6 +11,6 @@ RUN poetry install --no-root --no-dev
 
 EXPOSE 5000
 
-CMD ["poetry", "run", "python", "api_copiloto/main.py"]
+CMD ["poetry", "run", "python", "api_copiloto/backend/main.py"]
 
 

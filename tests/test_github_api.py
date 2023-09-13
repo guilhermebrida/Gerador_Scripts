@@ -1,16 +1,17 @@
-from api_copiloto.git_api import get_commit_sha, create_branch, create_pull_request,commit_file_to_github
+from api_copiloto.backend.git_api import get_commit_sha, create_branch, create_pull_request,commit_file_to_github, Get_token
 from unittest.mock import Mock, mock_open
 from unittest import mock
 import requests_mock
-from decouple import config
+from decouple import config,AutoConfig, Config, RepositoryEnv
 import requests
 import pytest
+import os
 
+DOTENV_FILE = '.env'
+env_config = Config(RepositoryEnv(DOTENV_FILE))
 
 
 def test_get_sha_igual_200():
-    # print(config("BRIDA_USER"))
-    print(config("BRIDA_TOKEN"))
     sha = get_commit_sha()
     assert sha[1] == 200
 
@@ -19,9 +20,10 @@ def test_sha_deve_ser_valido():
     assert len(sha[0]) == 40
 
 def test_deve_retornar_201_ao_criar_nova_branch(monkeypatch):
-    url = 'https://api.github.com/repos/CreareSistemas/virloc8-teste-de-esteira/git/refs'
+    url = 'https://api.github.com/repos/CreareSistemas/iot-virtec-scripts/git/refs'
     headers = {
-        'Authorization': f'Bearer {config("BRIDA_TOKEN")}',
+        # 'Authorization': f'Bearer {config("TOKEN_GITHUB")}',
+        'Authorization': f'Bearer {Get_token()}',
         'Content-Type': 'application/vnd.github+json'
     }
     data = {
@@ -46,7 +48,7 @@ def test_deve_retornar_201_ao_criar_nova_branch(monkeypatch):
 
 
 def test_deve_retornar_201_ao_criar_novo_commit(monkeypatch):
-    url = 'https://api.github.com/repos/CreareSistemas/virloc8-teste-de-esteira/contents/Virtec/Virloc8/Cliente/teste/teste_VL8.txt'
+    url = 'https://api.github.com/repos/CreareSistemas/iot-virtec-scripts/contents/Virtec/Virloc8/Cliente/teste/teste_VL8.txt'
 
     expected_response = {'status_code': 201, 'json': {}, 'text': ''}
 
@@ -57,7 +59,8 @@ def test_deve_retornar_201_ao_criar_novo_commit(monkeypatch):
             self.text = text
 
     def mock_post(url, **kwargs):
-        assert kwargs['headers']['Authorization'] == f'Bearer {config("BRIDA_TOKEN")}'
+        # assert kwargs['headers']['Authorization'] == f'Bearer {config("TOKEN_GITHUB")}'
+        assert kwargs['headers']['Authorization'] == f'Bearer {Get_token()}'
         assert kwargs['headers']['Content-Type'] == 'application/vnd.github+json'
         return MockResponse(expected_response['status_code'], expected_response['json'], expected_response['text'])
 
@@ -68,10 +71,11 @@ def test_deve_retornar_201_ao_criar_novo_commit(monkeypatch):
 
 
 def test_deve_retornar_201_ao_criar_novo_pull_request(monkeypatch):
-    url = 'https://api.github.com/repos/CreareSistemas/virloc8-teste-de-esteira/pulls'
+    url = 'https://api.github.com/repos/CreareSistemas/iot-virtec-scripts/pulls'
     headers = {
         'Accept': 'application/vnd.github.v3+json',
-        'Authorization': f'Bearer {config("BRIDA_TOKEN")}'
+        'Authorization': f'Bearer {Get_token()}'
+        # 'Authorization': f'Bearer {config("TOKEN_GITHUB")}'
     }
     data = {
         'title': 'teste',

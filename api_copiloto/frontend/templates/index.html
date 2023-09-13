@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Checkboxes</title>
+    <link rel="stylesheet" href="/static/css/styles.css">
+</head>
+<body>
+    <form action="/submit" method="POST">
+        <h1>Hardware</h1>
+        {% for hw in hardwares %}
+        <label>
+            <input type="checkbox" name="hw" value="{{ hw[0] }}" onchange="obterClientes(this)">
+            {{ hw[1] }}
+        </label>
+        {% endfor %}
+        <h1>Cliente</h1>
+        <div class="dropdown">
+            <button class="dropdown-button">Cliente</button>
+            <input type="text" name='cliente' id="campo-cliente">
+            <div id="clientes-dropdown" class="dropdown-options">
+            </div>
+          </div>
+        <h1>Funcionalidades Desejadas:</h1>
+    
+        {% for checkbox in checkboxes %}
+        <label>
+            <input type="checkbox" name="checkbox" value="{{ checkbox[0] }}">
+            {{ checkbox[1] }}
+        </label>
+        <br>
+        {% endfor %}
+        <br>
+        <h1>Valores parâmetros:</h1>
+        {% for var in checkboxes_var %}
+        <label>
+            {% if var[0] == 1 %}
+            <input type="text" maxlength="20" name="input_{{ var[0] }}" placeholder="Insira um valor">
+            {{ var[1] }}
+            {% elif var[0] == 2 %}
+            <input type="text" maxlength="20" name="input_{{ var[0] }}" placeholder="Insira um valor">
+            {{ var[1] }}
+            {% elif var[0] == 20 %}
+            <input type="text" maxlength="10" name="input_{{ var[0] }}" placeholder="Ex BRACELL">
+            {{ var[1] }}
+            {% else %}
+            <input type="tel" maxlength="5" name="input_{{ var[0] }}" placeholder="Insira um valor">
+            {{ var[1] }}
+            {% endif %}
+        </label>
+        <br>
+        {% endfor %}
+        <br>
+        <h1> Alarmes Ativos </h1>
+        {% for alarme in alarmes %}
+        <label>
+            <input type="checkbox" name="alarme" value="{{ alarme[0] }}">
+            {{ alarme[1] }}
+        </label>
+        <br>
+        {% endfor %}
+        <br>
+        <input type="submit" value="Gerar Script">
+    </form>
+    <script src="/static/js/env.js"></script>
+    <!-- <script src=".env"></script> -->
+    <script src="/static/js/script.js"></script> 
+    <!-- <script src="{{ url_for('static', filename='js/script.js') }}"></script> -->
+</body>
+</html>
+

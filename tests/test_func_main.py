@@ -1,4 +1,4 @@
-from api_copiloto.main import *
+from api_copiloto.backend.main import *
 import pytest
 import requests_mock
 from unittest.mock import Mock, mock_open, patch
@@ -6,7 +6,7 @@ from unittest import mock
 import requests
 import sys
 from flask_testing import TestCase
-sys.path.append('C:/Python_scripts/Gerador_Scripts/api_copiloto/')
+sys.path.append('./api_copiloto/')
 
 
 
@@ -150,9 +150,10 @@ def test_deve_retornar_os_limites_de_dirigibilidade(monkeypatch):
         result = Get_values(checkbox_names_var)
         assert result == assert_values
 
-@mock.patch('api_copiloto.main.Post_file')
+
+@mock.patch('api_copiloto.backend.main.Post_file')
 def test_deve_retornar_ur_arquivo_com_os_parametros(
-     mock_post_file, monkeypatch
+     mock_post_file
 ):
     arquivo = 'arquivo teste\n>SUT11,QCT27,7,15,400,800<\n>SUT12,QCT27,7,15,1111,2222<\n \
                 >SUT13,QCT27,7,15,3333,9999<\n>SUT14,QCT27,7,15,1111,4443<\n \
@@ -224,9 +225,9 @@ def test_deve_retornar_bitmap_para_as_primeiras_10_funcionalidades_escolhidas():
     assert bitmap_funcionaliades('>STP15 1<',checkbox_marcadas) == '>STP15 1023<'
 
 
-@mock.patch('api_copiloto.main.platform.system')
-@mock.patch('api_copiloto.main.create_pull_request')
-@mock.patch('api_copiloto.main.commit_file_to_github')
+@mock.patch('api_copiloto.backend.main.platform.system')
+@mock.patch('api_copiloto.backend.main.create_pull_request')
+@mock.patch('api_copiloto.backend.main.commit_file_to_github')
 def test_deve_postar_arquivo_no_git_maquina_windows(mock_commit,mock_pull,mock_sys):
     mock_sys.return_value = 'Windows'
     mock_commit.return_value = 201
@@ -239,9 +240,9 @@ def test_deve_postar_arquivo_no_git_maquina_windows(mock_commit,mock_pull,mock_s
         assert resultado[1] == 'Pull Request OK'
 
 
-@mock.patch('api_copiloto.main.platform.system')
-@mock.patch('api_copiloto.main.create_pull_request')
-@mock.patch('api_copiloto.main.commit_file_to_github')
+@mock.patch('api_copiloto.backend.main.platform.system')
+@mock.patch('api_copiloto.backend.main.create_pull_request')
+@mock.patch('api_copiloto.backend.main.commit_file_to_github')
 def test_deve_postar_arquivo_no_git_maquina_Linux(mock_commit,mock_pull,mock_sys):
     mock_sys.return_value = 'Linux'
     mock_commit.return_value = 201
@@ -252,3 +253,52 @@ def test_deve_postar_arquivo_no_git_maquina_Linux(mock_commit,mock_pull,mock_sys
         resultado = Post_file('path/teste', ['1'], 'teste','tudo')
         assert resultado[0] == 201
         assert resultado[1] == 'Pull Request OK'
+
+
+
+def test_gera_arquivo_env_js_com_token():
+    m = mock_open()
+    token = os.environ.get('TOKEN_GITHUB')
+    if token == None:
+        token = config('TOKEN_GITHUB') 
+    with patch('builtins.open', m):
+        criar_env_js()
+    m.mock_calls
+    m.assert_called_once_with('./api_copiloto/frontend/static/js/env.js', 'w')
+    handle = m()
+    handle.write.assert_called_once_with(f'window.TOKEN_GITHUB = "{token}"')
+
+
+@pytest.mark.parametrize('hw',('VL10','VL12'))
+def test_deve_retornar_marcha_lenta_sut04_para_s3(hw):
+    sut04 = '>SUT04,QCT27,7,15,400,1000<'
+    esperado = '>SUT04,QCT27,7,15,400,800<'
+    assert Copiloto(sut04,hw).marcha_lenta('800') == esperado
+
+
+@pytest.mark.parametrize('hw',('VL10','VL12'))
+def test_deve_retornar_min_faixa_verde_sut09_para_s3(hw):
+    sut09 = '>SUT09,QCT27,7,15,1200,4500<'
+    esperado = '>SUT09,QCT27,7,15,2000,4500<'
+    assert Copiloto(sut09,hw).min_faixa_verde('2000') == esperado
+
+
+@pytest.mark.parametrize('hw',('VL10','VL12'))
+def test_deve_retornar_max_faixa_verde_sut09_para_s3(hw):
+    sut09 = '>SUT09,QCT27,7,15,1200,4500<'
+    esperado = '>SUT09,QCT27,7,15,1200,5000<'
+    assert Copiloto(sut09,hw).max_faixa_verde('5000') == esperado
+
+
+@pytest.mark.parametrize('hw',('VL10','VL12'))
+def test_deve_retornar_freio_motor_sut16_para_s3(hw):
+    sut16 = '>SUT16,QCT27,7,15,9999,9999<\n>SUT17,QCT27,7,15,9999,9999<'
+    esperado = '>SUT16,QCT27,7,15,1500,4999<\n>SUT17,QCT27,7,15,5000,9999<'
+    assert Copiloto(sut16,hw).freio_motor('5000','1500') == esperado
+
+
+@pytest.mark.parametrize('hw',('VL10','VL12'))
+def test_deve_retornar_troca_marcha_sut56_para_s3(hw):
+    sut56 = '>SUT56,QCT27,7,15,0000,9999<'
+    esperado = '>SUT56,QCT27,7,15,1000,9999<'
+    assert Copiloto(sut56,hw).troca_marcha('1000') == esperado

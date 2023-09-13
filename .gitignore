@@ -3,14 +3,14 @@
 
 ##bash
 .vscode/
-
+./api_copiloto/frontend/static/js/env.js
 
 ### Python ###
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
 *$py.class
-
+api_copiloto/frontend/static/js/env.js
 # C extensions
 *.so
 

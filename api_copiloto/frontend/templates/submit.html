@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Submit</title>
+    <link rel="stylesheet" href="/static/css/styles.css">
+</head>
+<body>
+    <div class="fora">
+        <div class="left-items">
+            <h3>Hardware</h3>
+            <label>
+                {{ hardware }}
+            </label>
+            <h3>Cliente</h3>
+            <label>{{ cliente }} </label>
+            <h3>Funcionalidades Escolhidas:</h3>
+            {% for funcao in funcoes %}
+            <label>
+                {{ funcao }}
+            </label>
+            <br>
+            {% endfor %}
+            <br>
+        </div>
+        <div class="param-list">
+            <h3>Valores parâmetros:</h3>
+            {% for var in values %}
+                <label >
+                    {{ var }}: {{ values[var] }}
+                </label>
+                <br>
+            {% endfor %}
+            <br>
+            <h3> Alarmes Ativos </h3>
+            {% for alarme in alarmes %}
+            <label>
+                {{ alarme }}
+            </label>
+            <br>
+            {% endfor %}
+            <br>
+            <h3> Pull Request </h3>
+            <label>
+                Status Code: {{ status_code }}
+                <br>
+                URL Pull Request: <a href="{{ pull_request }}">{{ pull_request }}</a>
+            </label>
+        </div>
+    </div>
+</body>
+</html>
+

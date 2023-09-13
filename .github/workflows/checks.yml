@@ -28,16 +28,15 @@ jobs:
 
       - name: Criar arquivo .env
         run: |
-          # echo "BRIDA_USER=${{ secrets.BRIDA_USER }}" >> .env
-          echo "BRIDA_TOKEN=${{ secrets.BRIDA_TOKEN }}" >> .env
+          echo "TOKEN_GITHUB=${{ secrets.TOKEN_GITHUB }}" >> .env
+          pwd
+          cat .env
 
       - name: Testes
+        env:
+          TOKEN_GITHUB: ${{ secrets.TOKEN_GITHUB }}
         run : |
           # export $(cat .env | xargs) 
           poetry run pytest --cov
           poetry run coverage xml
-
-      - name: Upload coverage reports to Codecov
-        uses: codecov/codecov-action@v3
-        env:
-          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+          poetry run coverage html
