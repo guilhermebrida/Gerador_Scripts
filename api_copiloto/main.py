@@ -22,6 +22,17 @@ app.static_folder = './static/css'
 
 checkbox_hardwares = ['S8','S4','S4+','S3','S3+']
 
+def criar_env_js():
+    try:
+        token = Get_token()
+        if token is not None:
+            with open('./api_copiloto/frontend/static/js/env.js', 'w') as f:
+                f.write(f'window.TOKEN_GITHUB = "{token}"')
+        else:
+            print("A variável de ambiente TOKEN_GITHUB não está definida.")
+    except Exception as e:
+        print(f"Ocorreu um erro: {str(e)}")
+
 def get_checkbox_names(vl_version):
     checkbox_names = {
         "Tracking": f"./api_copiloto/funções copiloto/{vl_version}/tracking.txt",
@@ -278,4 +289,27 @@ def serve_js(filename):
 
 
 if __name__ == '__main__':
-  app.run(host="0.0.0.0",debug=True)
+    criar_env_js()
+  # app.run(host="0.0.0.0",debug=True)
+    from gunicorn.app.base import BaseApplication
+
+    class FlaskApp(BaseApplication):
+        def __init__(self, app, options=None):
+            self.options = options or {}
+            self.application = app
+            super().__init__()
+
+        def load_config(self):
+            for key, value in self.options.items():
+                if key in self.cfg.settings and value is not None:
+                    self.cfg.set(key, value)
+
+        def load(self):
+            return self.application
+
+    gunicorn_options = {
+        'bind': '0.0.0.0:5000',
+        'workers': 4  # Ajuste conforme necessário
+    }
+
+    FlaskApp(app, gunicorn_options).run()
